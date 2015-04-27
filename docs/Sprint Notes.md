@@ -1,6 +1,6 @@
 # BlueROV ROS Sprint
 
-The goal of this sprint is to create a ROS package for the BlueROV that provides a solid foundation for community members to build on. See the implementation overview diagram.
+A one-week sprint is being held to kick off the development of the BlueROV software. The goal of this sprint is to create a ROS package for the BlueROV that provides a solid foundation for community members to build on.
 
 Our primary concerns are:
 
@@ -8,6 +8,7 @@ Our primary concerns are:
 * Robust, closed-loop maneuvering
 * Low-latency, real-time video
 * Lowest possible learning curve for community members with custom sub configurations
+* Complete documentation such that a community can get fully up and running with their own BlueROV
 
 ## Monday
 

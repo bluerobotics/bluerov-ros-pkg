@@ -1,0 +1,12 @@
+site_name: ArchitectUI
+# docs_dir: './'
+# theme: united
+# use_directory_urls: false
+repo_url: https://github.com/bluerobotics/BlueROV
+markdown_extensions: ['tables']
+pages:
+- ['index.md', 'Home']
+- ['Setup.md', 'Setup']
+- ['Sprint Notes.md', 'Sprint Notes']
+- ['Wet Test Checklist.md', 'Wet Test Checklist']
+- ['Change History.md', 'Change History']
