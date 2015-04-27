@@ -1,4 +1,4 @@
-# Setup
+# Setup Instructions
 
 The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. We are building off of the current version of ROS, codenamed Indigo Igloo.
 

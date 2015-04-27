@@ -1,4 +1,4 @@
-site_name: ArchitectUI
+site_name: BlueROV
 # docs_dir: './'
 # theme: united
 # use_directory_urls: false
@@ -6,7 +6,8 @@ repo_url: https://github.com/bluerobotics/BlueROV
 markdown_extensions: ['tables']
 pages:
 - ['index.md', 'Home']
-- ['Setup.md', 'Setup']
+- ['Vehicle Overview.md', 'Vehicle Overview']
+- ['Setup Instructions.md', 'Setup Instructions']
 - ['Sprint Notes.md', 'Sprint Notes']
 - ['Wet Test Checklist.md', 'Wet Test Checklist']
 - ['Change History.md', 'Change History']
