@@ -1,6 +1,6 @@
 # BlueROV
 
-Robotic underwater vehicle propelled by the BlueRobotics T100 Thruster.
+Robotic underwater vehicle propelled by the BlueRobotics thrusters.
 
 ## Documentation
 
