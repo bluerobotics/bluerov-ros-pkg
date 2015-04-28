@@ -19,11 +19,49 @@ ProTip: If you decide to use a shared folder between your host machine and the V
 
 ### RaspberryPi
 
-The ROS community maintains excellent instructions on getting [ROS to run on a RaspberryPi](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Indigo%20on%20Raspberry%20Pi). Follow those and you should be good to go.
+The ROS community maintains excellent instructions on getting [ROS to run on a RaspberryPi](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Indigo%20on%20Raspberry%20Pi). Before you get started though, make sure you have the Raspbian OS installed on an SD card with enough space to install ROS:
 
-1. Download Raspbian OS from [raspberrypi.org/](https://www.raspberrypi.org/downloads/)
-1. Install OS onto SD card using [OS-specific instructions](https://www.raspberrypi.org/documentation/installation/installing-images/README.md)
-1. Continue with the rest of the ROS install guide
+1. Download NOOBS from [raspberrypi.org/](https://www.raspberrypi.org/downloads/)
+1. Insert an SD card and format it as FAT32
+1. Extract the files from the NOOBS download and copy them onto the SD card
+1. Make sure you have a keyboard, mouse, and monitor plugged into the Pi
+1. Insert the SD card into the Pi and power it on
+1. Install the OS via the on-screen menus
+
+At this point, you'll want to make sure that the following setup items have been enabled through `sudo raspi-config`:
+
+* your primary partition has been expanded to take the full capacity of the SD card
+* the camera module is enable (if applicable)
+* ssh server is enabled
+* set a custom hostname if desired (we used "bluerov")
+
+Eventually, you'll probably connect the Pi directly to a laptop during a wet test, but connect your Pi to your local network for now. If you want to use wifi, get ahold of a wireless adapter and read [some](https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md) [documentation](https://kerneldriver.wordpress.com/2012/10/21/configuring-wpa2-using-wpa_supplicant-on-the-raspberry-pi/) on the subject. Be sure to add "auto wlan0" to the end of `/etc/network/interfaces` so that the wifi adapter comes up by default on boot up.
+
+Once the network is up and running, we recommend enabling a multicast DNS address for your Pi. This enables you to access your Pi on the network by name instead of by IP address. Since we set our hostname to "bluerov", our new DNS name is `bluerov.local`. To enable this feature, follow [these instructions](http://elinux.org/RPi_Advanced_Setup) to install and configure `avahi-daemon`. It should look something like this:
+
+```bash
+sudo apt-get update
+sudo apt-get install avahi-daemon
+```
+
+At this point, make sure you can ssh into your pi one way or another. Try `ssh pi@bluerov.local` if you set up mDNS, otherwise you can log in with the IP address which you can find via `ifconfig`. Once you have confirmed that ssh works, you can ditch the keyboard and monitor that are hooked directly to your Pi and work from your workstation instead.
+
+You are now ready to install ROS on the Pi. The installation steps we used are provided below, but you should really consult the official [ROS installation instructions](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Indigo%20on%20Raspberry%20Pi) before proceeding.
+
+```bash
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu wheezy main" > /etc/apt/sources.list.d/ros-latest.list'
+wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six
+sudo pip install rosdep rosinstall_generator wstool rosinstall
+sudo rosdep init
+rosdep update
+mkdir ~/catkin_ws
+cd ~/catkin_ws
+rosinstall_generator ros_comm --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
+wstool init src indigo-ros_comm-wet.rosinstall
+```
 
 ### BlueROV ROS Package
 
