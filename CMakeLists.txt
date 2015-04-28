@@ -32,4 +32,4 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(pilot src/pilot.cpp)
 target_link_libraries(pilot ${catkin_LIBRARIES})
-add_dependencies(pilot bluerov_generate_messages_cpp)
+add_dependencies(pilot ${catkin_EXPORTED_TARGETS})

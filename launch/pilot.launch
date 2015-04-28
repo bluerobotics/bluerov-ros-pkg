@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node respawn="true" pkg="bluerov" type="pilot" name="pilot" output="screen">
+    <param name="~n_thrusters" value="6" type="int"/>
+    <param name="~pub_rate" value="20.0" type="double"/>
+  </node>
+</launch>
