@@ -1,4 +1,4 @@
-# Setup Instructions
+# Setup
 
 The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. We are building off of the current version of ROS, codenamed Indigo Igloo.
 
@@ -14,6 +14,8 @@ For first time ROS users, we highly recommend installing the Ubuntu 14.04 virtua
 1. download and install [VirtualBox](https://www.virtualbox.org/) and the VirtualBox Extension Pack for your host machine
 1. download one of the ROS [virtual machine images from Nootrix](http://nootrix.com/downloads/#RosVM)
 1. open VirtualBox, choose File > Import Appliance and then select the virtual machine image that you downloaded
+
+ProTip: If you decide to use a shared folder between your host machine and the VM, be sure to run `sudo usermod -aG vboxsf $(whoami)` and restart or login/logout in order to have write privileges in the shared folder from the VM.
 
 ### RaspberryPi
 

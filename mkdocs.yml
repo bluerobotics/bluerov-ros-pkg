@@ -6,8 +6,9 @@ repo_url: https://github.com/bluerobotics/BlueROV
 markdown_extensions: ['tables']
 pages:
 - ['index.md', 'Home']
-- ['Vehicle Overview.md', 'Vehicle Overview']
-- ['Setup Instructions.md', 'Setup Instructions']
+- ['Vehicle.md', 'Vehicle']
+- ['Setup.md', 'Setup']
+- ['Usage.md', 'Usage']
 - ['Sprint Notes.md', 'Sprint Notes']
 - ['Wet Test Checklist.md', 'Wet Test Checklist']
 - ['Change History.md', 'Change History']

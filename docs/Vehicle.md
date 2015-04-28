@@ -1,4 +1,4 @@
-# Vehicle Overview
+# Vehicle
 
 The BlueROV is an underwater remotely operated vehicle (ROV) propelled by six T100s. It uses an APM and RaspberryPi internally and can be controlled from the surface. ROS is used as a software backbone.
 
