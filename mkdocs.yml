@@ -1,12 +1,9 @@
 site_name: BlueROV
-# docs_dir: './'
-# theme: united
-# use_directory_urls: false
+theme: cerulean
 repo_url: https://github.com/bluerobotics/BlueROV
 markdown_extensions: ['tables']
 pages:
 - ['index.md', 'Home']
-- ['Vehicle.md', 'Vehicle']
 - ['Setup.md', 'Setup']
 - ['Usage.md', 'Usage']
 - ['Sprint Notes.md', 'Sprint Notes']

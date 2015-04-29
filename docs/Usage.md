@@ -15,7 +15,7 @@ ROV thruster can be dangerous and are not toys. If there is a safety concern at 
 Launching the BlueROV core services can be as simple as:
 
 ```bash
-ssh viki@bluerov -p viki -c 'roslaunch bluerov core.launch'
+ssh viki@bluerov -c 'roslaunch bluerov core.launch'
 ```
 
 If you're in the middle of development, however, you'll likely want to turn on services with a bit more granularity. For starters, run the follow three commands in three separate terminal windows:
