@@ -7,6 +7,7 @@
 
 #include <ros/ros.h>
 #include <bluerov/Thruster.h>
+#include <geometry_msgs/Twist.h>
 
 class Pilot {
   public:
@@ -16,12 +17,15 @@ class Pilot {
   private:
     ros::NodeHandle nh;
     ros::Publisher thruster_pub;
+    ros::Subscriber cmd_vel_sub;
 
     int n_thrusters;
     double pub_rate;
     ros::Time last_pub_time;
     ros::Duration pub_period;
+    geometry_msgs::Twist::ConstPtr cmd_vel;
 
+    void velCallback(const geometry_msgs::Twist::ConstPtr& update);
     void sendThrusterMessage();
 };
 
@@ -37,6 +41,7 @@ Pilot::Pilot() {
 
   // connects subs and pubs
   thruster_pub = nh.advertise<bluerov::Thruster>("thruster", 1);
+  cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
 
   // setup
   last_pub_time = ros::Time::now();
@@ -54,6 +59,10 @@ void Pilot::spin() {
     // call all waiting callbacks
     ros::spinOnce();
   }
+}
+
+void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& update) {
+  cmd_vel = update;
 }
 
 void Pilot::sendThrusterMessage() {

@@ -49,9 +49,10 @@ TODO: rqt_graph image
 
 ### rqt_plot
 
-The [rqt_plot](http://wiki.ros.org/rqt_plot) command is a quick and dirty way to plot ROS message data over time. Try the follow command with the `pilot` node running:
+The [rqt_plot](http://wiki.ros.org/rqt_plot) command is a quick and dirty way to plot ROS message data over time. Try the one of the following commands with the `pilot` and `teleop_xbox` nodes running:
 
 ```bash
+rqt_plot /cmd_vel/linear/x /cmd_vel/linear/y /cmd_vel/linear/z /cmd_vel/angular/x /cmd_vel/angular/y /cmd_vel/angular/z
 rqt_plot /thruster/commands/data[0] /thruster/commands/data[1] /thruster/commands/data[2] /thruster/commands/data[3] /thruster/commands/data[4] /thruster/commands/data[5]
 ```
 

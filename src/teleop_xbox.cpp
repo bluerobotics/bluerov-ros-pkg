@@ -19,16 +19,19 @@ class TeleopXbox {
     void spin();
 
   private:
-    void configCallback(bluerov::teleop_xboxConfig &update, uint32_t level);
-    void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
-    double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
-
     ros::NodeHandle nh;
-    ros::Publisher vel_pub;
+    ros::Publisher cmd_vel_pub;
     ros::Subscriber joy_sub;
 
     dynamic_reconfigure::Server<bluerov::teleop_xboxConfig> server;
     bluerov::teleop_xboxConfig config;
+
+    bool initLT;
+    bool initRT;
+
+    void configCallback(bluerov::teleop_xboxConfig &update, uint32_t level);
+    void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
+    double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
 };
 
 TeleopXbox::TeleopXbox() {
@@ -38,8 +41,12 @@ TeleopXbox::TeleopXbox() {
   server.setCallback(f);
 
   // connects subs and pubs
-  vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+  cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
+
+  // set initial values
+  initLT = false;
+  initRT = false;
 }
 
 void TeleopXbox::spin() {
@@ -66,7 +73,7 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   msg.angular.x = config.wx_scaling * computeAxisValue(joy, config.wx_axis, config.expo);
   msg.angular.y = config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo);
   msg.angular.z = config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
-  vel_pub.publish(msg);
+  cmd_vel_pub.publish(msg);
 
   // send enable action
   //TODO
@@ -78,14 +85,21 @@ double TeleopXbox::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int i
   // grab axis value
   double value;
   if(index == 6) {
-    // this is the trigger pair pseudo axis
-    value = joy->axes[2] - joy->axes[5];
-    if(value != 0.0) value = value / 2;
+    // the joystick driver initializes all values to 0.0, however, the triggers
+    // physically spring back to 1.0 - let's account for this here
+    double lt = joy->axes[2];
+    double rt = joy->axes[5];
+    if(lt < -0.01 || lt > 0.01) initLT = true;
+    else if(!initLT) lt = 1.0;
+    if(rt < -0.01 || rt > 0.01) initRT = true;
+    else if(!initRT) rt = 1.0;
+
+    // this is the trigger pair pseudo axis (LT-RT; pressing RT results in a positive number)
+    value = (lt - rt) / 2.0;
   }
   else if(index == 7) {
-    // this is the bumper pair pseudo axis
-    value = joy->buttons[5] - joy->buttons[4];
-    if(value != 0.0) value = value / 2;
+    // this is the bumper pair pseudo axis (RB-LB; pressing RB results in a positive number)
+    value = (joy->buttons[5] - joy->buttons[4]) / 2.0;
   }
   else {
     value = joy->axes[index];
