@@ -1,6 +1,14 @@
 # Usage
 
-Once you have completed [Setup](Setup.md), this guide will show you have to launch the different ROS nodes.
+Once you have completed [Setup](Setup.md), this guide will show you how to launch the different ROS nodes.
+
+## Safety
+
+ROV thruster can be dangerous and are not toys. If there is a safety concern at any point while using the BlueROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
+
+1. Hit the red "B" button on the Xbox controller (if connected and configured as such)
+1. Send the following command: `rostopic pub thruster_enable std_msgs/Bool false --once`
+1. Open the BlueROV and unplug the battery
 
 ## BlueROV Core Services
 

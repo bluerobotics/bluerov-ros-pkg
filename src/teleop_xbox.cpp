@@ -10,6 +10,7 @@
 #include <ros/console.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
+#include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/teleop_xboxConfig.h>
 
@@ -21,6 +22,7 @@ class TeleopXbox {
   private:
     ros::NodeHandle nh;
     ros::Publisher cmd_vel_pub;
+    ros::Publisher thruster_enable_pub;
     ros::Subscriber joy_sub;
 
     dynamic_reconfigure::Server<bluerov::teleop_xboxConfig> server;
@@ -42,6 +44,7 @@ TeleopXbox::TeleopXbox() {
 
   // connects subs and pubs
   cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+  thruster_enable_pub = nh.advertise<std_msgs::Bool>("thruster_enable", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
 
   // set initial values
@@ -50,12 +53,14 @@ TeleopXbox::TeleopXbox() {
 }
 
 void TeleopXbox::spin() {
-  while(ros::ok()) {
-    // enforce a crude max rate of 100Hz
-    ros::Duration(0.01).sleep();
+  ros::Rate loop(config.pub_rate);
 
+  while(ros::ok()) {
     // call all waiting callbacks
     ros::spinOnce();
+
+    // enforce a max publish rate
+    loop.sleep();
   }
 }
 
@@ -76,7 +81,16 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   cmd_vel_pub.publish(msg);
 
   // send enable action
-  //TODO
+  if(joy->buttons[config.disable_button] > 0) {
+    std_msgs::Bool msg;
+    msg.data = false;
+    thruster_enable_pub.publish(msg);
+  }
+  else if(joy->buttons[config.enable_button] > 0) {
+    std_msgs::Bool msg;
+    msg.data = false;
+    thruster_enable_pub.publish(msg);
+  }
 }
 
 double TeleopXbox::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo) {
