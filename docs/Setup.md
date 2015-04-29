@@ -1,12 +1,8 @@
 # Setup
 
-The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. We are building off of the current version of ROS, codenamed Indigo Igloo.
+The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. When operating a BlueROV, there should be one computer onboard the vehicle (as RaspberryPi in this documentation) and one computer for tele-operation (referred to here as the "workstation" computer.)
 
-## ROS Installation
-
-The BlueROV setup includes one main computer on the ROV itself and a secondary, tele-operations computer on the ground. The following instructions will help you get a vanilla version of ROS Indigo Igloo installed on both
-
-### Workstation
+## Workstation ROS Setup
 
 For first time ROS users, we highly recommend installing the Ubuntu 14.04 virtual machine images with ROS Indigo Igloo preinstalled by Nootrix. Choose the 64-bit version if your machine has the resources to support it, otherwise use the 32-bit version. To install using this method, please do the following:
 
@@ -15,9 +11,13 @@ For first time ROS users, we highly recommend installing the Ubuntu 14.04 virtua
 1. download one of the ROS [virtual machine images from Nootrix](http://nootrix.com/downloads/#RosVM)
 1. open VirtualBox, choose File > Import Appliance and then select the virtual machine image that you downloaded
 
+For reference, the hostname on the VM defaults to `c3po` with the username:password combo defaulting to `viki:viki`.
+
 ProTip: If you decide to use a shared folder between your host machine and the VM, be sure to run `sudo usermod -aG vboxsf $(whoami)` and restart or login/logout in order to have write privileges in the shared folder from the VM.
 
-### RaspberryPi
+ProTip: Check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics
+
+## RaspberryPi ROS Setup
 
 The ROS community maintains excellent instructions on getting [ROS to run on a RaspberryPi](http://wiki.ros.org/ROSberryPi/Installing%20ROS%20Indigo%20on%20Raspberry%20Pi). Before you get started though, make sure you have the Raspbian OS installed on an SD card with enough space to install ROS:
 
@@ -41,7 +41,7 @@ Once the network is up and running, we recommend enabling a multicast DNS addres
 
 ```bash
 sudo apt-get update
-sudo apt-get install avahi-daemon
+sudo apt-get install -y avahi-daemon
 ```
 
 At this point, make sure you can ssh into your pi one way or another. Try `ssh pi@bluerov.local` if you set up mDNS, otherwise you can log in with the IP address which you can find via `ifconfig`. Once you have confirmed that ssh works, you can ditch the keyboard and monitor that are hooked directly to your Pi and work from your workstation instead.
@@ -53,19 +53,39 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu wheezy main" > /etc/apt
 wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six
+
+sudo apt-get install -y python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six
 sudo pip install rosdep rosinstall_generator wstool rosinstall
+
 sudo rosdep init
 rosdep update
+
 mkdir ~/catkin_ws
 cd ~/catkin_ws
+
 rosinstall_generator ros_comm --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-ros_comm-wet.rosinstall
 wstool init src indigo-ros_comm-wet.rosinstall
+
+sudo apt-get install -y checkinstall cmake
+sudo sh -c 'echo "deb-src http://mirrordirector.raspbian.org/raspbian/ testing main contrib non-free rpi" >> /etc/apt/sources.list'
+sudo apt-get update
+
+mkdir ~/catkin_ws/external_src
+cd ~/catkin_ws/external_src
+
+sudo apt-get build-dep console-bridge
+apt-get source -b console-bridge
+sudo dpkg -i libconsole-bridge0.2_*.deb libconsole-bridge-dev_*.deb
+
+apt-get source -b lz4
+sudo dpkg -i liblz4-*.deb
+
+rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:wheezy
 ```
 
-### BlueROV ROS Package
+## BlueROV ROS Package
 
-The following steps assume that you are using the Nootrix image or have otherwise followed ROS' guidelines [configuring your ROS environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
+The following steps assume that you are using the Nootrix image or have otherwise followed ROS' guidelines [configuring your ROS environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment). Perform these steps for both the on-vehicle computer and the workstation computer.
 
 Check out the BlueROV repository:
 
@@ -87,8 +107,21 @@ You'll probably want to add the resulting setup file to your `~/.bashrc` script.
 echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc
 ```
 
-### APM ROS Installation
+Next, set up udev rules to make devices easier to find:
+
+```bash
+sudo cp ~/catkin_ws/src/bluerov/extra/99-bluerov.rules /etc/udev/rules.d/
+sudo udevadm trigger # to immediately reload the rules without restarting
+```
+
+Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html#syntax) for creating new udev rules.
+
+## APM ROS Installation
 
 We use TODO to compile and program the APM from the command line.
+
+TODO
+
+## Xbox Controller Setup
 
 TODO

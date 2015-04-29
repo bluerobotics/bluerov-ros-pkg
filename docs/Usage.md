@@ -31,7 +31,7 @@ TODO: set remote IP, launch xbox_teleop
 
 ROS includes a variety of tools to interrogate a running system. This is a brief overview on a few of them.
 
-## rostopic
+### rostopic
 
 The [rostopic](http://wiki.ros.org/rostopic?distro=indigo) command will list and display ROS network messages from the command line. With the BlueROV core services running, try the follow commands:
 
@@ -41,13 +41,13 @@ rostopic hz thruster
 rostopic echo thruster
 ```
 
-## rqt_graph
+### rqt_graph
 
 The [rqt_graph](http://wiki.ros.org/rqt_graph?distro=indigo) command displays all active nodes and shows the message subscribe/publish relationships between them. With all of the BlueROV nodes turned on, you should see a graph structure similar to this:
 
-TODO: graph image
+TODO: rqt_graph image
 
-## rqt_plot
+### rqt_plot
 
 The [rqt_plot](http://wiki.ros.org/rqt_plot) command is a quick and dirty way to plot ROS message data over time. Try the follow command with the `pilot` node running:
 
@@ -55,6 +55,21 @@ The [rqt_plot](http://wiki.ros.org/rqt_plot) command is a quick and dirty way to
 rqt_plot /thruster/commands/data[0] /thruster/commands/data[1] /thruster/commands/data[2] /thruster/commands/data[3] /thruster/commands/data[4] /thruster/commands/data[5]
 ```
 
-## rviz
+TODO: rqt_plot image
+
+### rviz
 
 TODO
+TODO: rviz image
+
+## Dynamic Reconfiguration
+
+The `pilot` and `teleop_xbox` nodes can be configured while running using the command:
+
+```bash
+rosrun rqt_reconfigure rqt_reconfigure
+```
+
+TODO: reconfigure GUI image
+
+Note that configuration changes during runtime do not persist. Make sure to update the appropriate file in the `config/` directory to persist changes.

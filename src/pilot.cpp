@@ -8,8 +8,7 @@
 #include <ros/ros.h>
 #include <bluerov/Thruster.h>
 
-class Pilot
-{
+class Pilot {
   public:
     Pilot();
     void spin();
@@ -26,8 +25,7 @@ class Pilot
     void sendThrusterMessage();
 };
 
-Pilot::Pilot()
-{
+Pilot::Pilot() {
   // load parameters
   ros::NodeHandle nh_priv("~");
   nh_priv.param("n_thrusters", n_thrusters, 1); // amount
@@ -45,10 +43,8 @@ Pilot::Pilot()
   pub_period = ros::Duration(1.0 / pub_rate);
 }
 
-void Pilot::spin()
-{
-  while(ros::ok())
-  {
+void Pilot::spin() {
+  while(ros::ok()) {
     // time to publish?
     if(ros::Time::now() > (last_pub_time + pub_period)) {
       sendThrusterMessage();
@@ -60,8 +56,7 @@ void Pilot::spin()
   }
 }
 
-void Pilot::sendThrusterMessage()
-{
+void Pilot::sendThrusterMessage() {
   // create message
   bluerov::Thruster thruster_msg;
   thruster_msg.header.stamp = ros::Time::now();
@@ -79,9 +74,9 @@ void Pilot::sendThrusterMessage()
   thruster_pub.publish(thruster_msg);
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   ros::init(argc, argv, "pilot");
   Pilot pilot;
   pilot.spin();
+  return 0;
 }
