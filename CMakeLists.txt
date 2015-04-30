@@ -15,12 +15,13 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## Declare ROS messages and services
-add_message_files(FILES Thruster.msg)
-# add_service_files(FILES AddTwoInts.srv)
+add_message_files(FILES
+  Thruster.msg
+  Health.msg
+)
 
 ## Generate added messages and services
-generate_messages(
-  DEPENDENCIES
+generate_messages(DEPENDENCIES
   std_msgs
 )
 
@@ -30,8 +31,8 @@ generate_dynamic_reconfigure_options(
 )
 
 ## Declare a catkin package
-catkin_package(
-  CATKIN_DEPENDS message_runtime
+catkin_package(CATKIN_DEPENDS
+  message_runtime
 )
 
 ## Specify additional locations of header files

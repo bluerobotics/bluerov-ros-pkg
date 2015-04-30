@@ -24,16 +24,16 @@ The ROS community maintains excellent instructions on getting [ROS to run on a R
 1. Download NOOBS from [raspberrypi.org/](https://www.raspberrypi.org/downloads/)
 1. Insert an SD card and format it as FAT32
 1. Extract the files from the NOOBS download and copy them onto the SD card
-1. Make sure you have a keyboard, mouse, and monitor plugged into the Pi
+1. Make sure you have a keyboard and monitor plugged into the Pi
 1. Insert the SD card into the Pi and power it on
-1. Install the OS via the on-screen menus
+1. Install the OS via the on-screen menus (press `enter` and then `i`)
 
 At this point, you'll want to make sure that the following setup items have been enabled through `sudo raspi-config`:
 
 * your primary partition has been expanded to take the full capacity of the SD card
 * the camera module is enable (if applicable)
-* ssh server is enabled
-* set a custom hostname if desired (we used "bluerov")
+* advanced menu > ssh server is enabled
+* advanced menu > set a custom hostname if desired (we used "bluerov")
 
 Eventually, you'll probably connect the Pi directly to a laptop during a wet test, but connect your Pi to your local network for now. If you want to use wifi, get ahold of a wireless adapter and read [some](https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md) [documentation](https://kerneldriver.wordpress.com/2012/10/21/configuring-wpa2-using-wpa_supplicant-on-the-raspberry-pi/) on the subject. Be sure to add "auto wlan0" to the end of `/etc/network/interfaces` so that the wifi adapter comes up by default on boot up.
 
@@ -81,6 +81,12 @@ apt-get source -b lz4
 sudo dpkg -i liblz4-*.deb
 
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:wheezy
+# python-rosdep, python-catkin-pkg, python-rospkg, and python-rosdistro installs fail, but that is OK because we installed then via pip earlier
+
+cd ~/catkin_ws
+sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
+echo '/opt/ros/indigo/setup.bash' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ## BlueROV ROS Package
@@ -92,6 +98,15 @@ Check out the BlueROV repository:
 ```bash
 cd ~/catkin_ws/src/
 git clone https://github.com/bluerobotics/BlueROV.git bluerov
+```
+
+Install missing dependencies:
+
+```bash
+sudo rosdep init # first time only, but will gracefully error otherwise
+rosdep update
+rosdep install --from-paths src --ignore-src --rosdistro indigo -y
+# sudo apt-get install -y ros-indigo-joy
 ```
 
 You should then be able to build your catkin workspace:
