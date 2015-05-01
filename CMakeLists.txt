@@ -42,6 +42,10 @@ add_executable(pilot src/pilot.cpp)
 target_link_libraries(pilot ${catkin_LIBRARIES})
 add_dependencies(pilot ${catkin_EXPORTED_TARGETS})
 
+add_executable(simple_pilot src/simple_pilot.cpp)
+target_link_libraries(simple_pilot ${catkin_LIBRARIES})
+add_dependencies(simple_pilot ${catkin_EXPORTED_TARGETS})
+
 add_executable(teleop_xbox src/teleop_xbox.cpp)
 target_link_libraries(teleop_xbox ${catkin_LIBRARIES})
 add_dependencies(teleop_xbox ${catkin_EXPORTED_TARGETS})

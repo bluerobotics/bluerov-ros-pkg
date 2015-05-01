@@ -2,6 +2,10 @@
 
 The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. When operating a BlueROV, there should be one computer onboard the vehicle (as RaspberryPi in this documentation) and one computer for tele-operation (referred to here as the "workstation" computer.)
 
+## Workstation Operating System
+
+ROS is a powerful framework, but only once it has been installed... We highly recommend sticking with Ubuntu 14.04 for your workstation computer. If you intend to run any of the 3D ROS applications (rviz, gazebo), you should either install Ubuntu directly onto the computer (not as a VM) or make sure that your computer has a discrete graphics card if you plan on running Ubuntu through a virtual machine. You've been warned!
+
 ## Workstation ROS Setup
 
 For first time ROS users, we highly recommend installing the Ubuntu 14.04 virtual machine images with ROS Indigo Igloo preinstalled by Nootrix. Choose the 64-bit version if your machine has the resources to support it, otherwise use the 32-bit version. To install using this method, please do the following:
@@ -80,10 +84,10 @@ sudo dpkg -i libconsole-bridge0.2_*.deb libconsole-bridge-dev_*.deb
 apt-get source -b lz4
 sudo dpkg -i liblz4-*.deb
 
+cd ~/catkin_ws
 rosdep install --from-paths src --ignore-src --rosdistro indigo -y -r --os=debian:wheezy
 # python-rosdep, python-catkin-pkg, python-rospkg, and python-rosdistro installs fail, but that is OK because we installed then via pip earlier
 
-cd ~/catkin_ws
 sudo ./src/catkin/bin/catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --install-space /opt/ros/indigo
 echo '/opt/ros/indigo/setup.bash' >> ~/.bashrc
 source ~/.bashrc
