@@ -2,10 +2,10 @@
 
 <launch>
   <!-- https://github.com/fpasteau/raspicam_node -->
-  <node respawn="true" pkg="raspicam" type="raspicam_node" name="raspicam" launch-prefix="$(find bluerov)/launch/camera_start_capture.launch">
+  <node respawn="true" pkg="raspicam" type="raspicam_node" name="raspicam" launch-prefix="$(find bluerov)/launch/camera_start_capture.sh">
     <param name="width" value="640" type="int"/>
     <param name="height" value="480" type="int"/>
     <param name="framerate" value="30" type="int"/>
-    <param name="quality" value="30" type="int"/>
+    <param name="quality" value="80" type="int"/>
   </node>
 </launch>
