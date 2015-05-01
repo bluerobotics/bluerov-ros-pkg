@@ -53,7 +53,7 @@ rostopic echo thruster
 
 The [rqt_graph](http://wiki.ros.org/rqt_graph?distro=indigo) command displays all active nodes and shows the message subscribe/publish relationships between them. With all of the BlueROV nodes turned on, you should see a graph structure similar to this:
 
-TODO: rqt_graph image
+![rqt_graph](bluerov-rqt-graph.jpg)
 
 ### rqt_plot
 
@@ -64,7 +64,7 @@ rqt_plot /cmd_vel/linear/x /cmd_vel/linear/y /cmd_vel/linear/z /cmd_vel/angular/
 rqt_plot /thruster/commands/data[0] /thruster/commands/data[1] /thruster/commands/data[2] /thruster/commands/data[3] /thruster/commands/data[4] /thruster/commands/data[5]
 ```
 
-TODO: rqt_plot image
+![rqt_plot](bluerov-rqt-plot.jpg)
 
 ### rviz
 
@@ -79,6 +79,6 @@ The `pilot` and `teleop_xbox` nodes can be configured while running using the co
 rosrun rqt_reconfigure rqt_reconfigure
 ```
 
-TODO: reconfigure GUI image
+![rqt_reconfigure](bluerov-rqt-reconfigure.jpg)
 
 Note that configuration changes during runtime do not persist. Make sure to update the appropriate file in the `config/` directory to persist changes.
