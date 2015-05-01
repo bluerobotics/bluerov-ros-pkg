@@ -5,6 +5,7 @@
  * Description: Sends thruster commands in microseconds to the BlueROV.
  */
 
+#include <math.h>
 #include <ros/ros.h>
 #include <bluerov/Thruster.h>
 #include <geometry_msgs/Twist.h>
@@ -64,6 +65,21 @@ void Pilot::spin() {
 void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& update) {
   cmd_vel = update;
 }
+
+// double Pilot::thrustCommandT100(double thrustInNewtons) {
+//   double pwm;
+
+//   // deadzone screws up our polynomial estimate, so use two equations instead
+//   // data from T100 spec page; see "extra/thruster equations.xlsx"
+//   if(thrust >= 0.0) {
+//     // todo
+//   }
+//   else {
+//     pwm = 56.67 * pow(thrustInNewtons, 2) + 298.4 * thrustInNewtons + 1453.8;
+//   }
+
+//   return pwm;
+// }
 
 void Pilot::sendThrusterMessage() {
   // create message

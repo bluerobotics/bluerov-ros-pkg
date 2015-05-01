@@ -2,6 +2,18 @@
 
 The BlueROV software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. When operating a BlueROV, there should be one computer onboard the vehicle (as RaspberryPi in this documentation) and one computer for tele-operation (referred to here as the "workstation" computer.)
 
+## ROS Node Topology
+
+TODO: which nodes should be run from which computer?
+
+Node | Location
+--- | ---
+roscore | ROV (preferred)
+mavlink | ROV (required)
+raspi cam | ROV (required)
+pilot, simple_pilot | ROV (preferred)
+teleop_xbox | Surface PC (required)
+
 ## Workstation Operating System
 
 ROS is a powerful framework, but only once it has been installed... We highly recommend sticking with Ubuntu 14.04 for your workstation computer. If you intend to run any of the 3D ROS applications (rviz, gazebo), you should either install Ubuntu directly onto the computer (not as a VM) or make sure that your computer has a discrete graphics card if you plan on running Ubuntu through a virtual machine. You've been warned!
