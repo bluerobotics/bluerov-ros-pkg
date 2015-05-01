@@ -105,6 +105,11 @@ echo '/opt/ros/indigo/setup.bash' >> ~/.bashrc
 source ~/.bashrc
 ```
 
+extra:
+
+rosinstall_generator ros_comm ros_control joystick_drivers image_common image_transport_plugins --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
+export LC_ALL=C # https://github.com/ros-drivers/hokuyo_node/issues/3
+
 ## BlueROV ROS Package
 
 The following steps assume that you are using the Nootrix image or have otherwise followed ROS' guidelines [configuring your ROS environment](http://wiki.ros.org/ROS/Tutorials/InstallingandConfiguringROSEnvironment). Perform these steps for both the on-vehicle computer and the workstation computer.

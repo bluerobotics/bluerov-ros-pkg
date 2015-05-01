@@ -1,3 +1,1 @@
 SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0010", SYMLINK+="arduino"
-
-# ATTRS{product}=="Arduino Mega 2560", SYMLINK+="arduino"
