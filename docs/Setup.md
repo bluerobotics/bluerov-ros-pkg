@@ -109,6 +109,8 @@ extra:
 
 rosinstall_generator ros_comm ros_control joystick_drivers image_common image_transport_plugins --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
 export LC_ALL=C # https://github.com/ros-drivers/hokuyo_node/issues/3
+catkin_make -DCATKIN_WHITELIST_PACKAGES="bluerov;raspicam"
+
 
 ## BlueROV ROS Package
 

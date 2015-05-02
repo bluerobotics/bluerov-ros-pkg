@@ -35,6 +35,10 @@ roslaunch bluerov pilot.launch
 
 TODO: set remote IP, launch xbox_teleop
 
+```bash
+alias usebluerov='export ROS_MASTER_URI=http://bluerov:11311'
+```
+
 ## Interrogating ROS
 
 ROS includes a variety of tools to interrogate a running system. This is a brief overview on a few of them.

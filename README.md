@@ -1,6 +1,6 @@
 # BlueROV
 
-Robotic underwater vehicle propelled by the BlueRobotics thrusters.
+A ROS package for the BlueROV and BlueROV compatible vehicles.
 
 ## Documentation
 

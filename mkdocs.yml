@@ -6,6 +6,7 @@ pages:
 - ['index.md', 'Home']
 - ['Setup.md', 'Setup']
 - ['Usage.md', 'Usage']
-- ['Sprint Notes.md', 'Sprint Notes']
 - ['Wet Test Checklist.md', 'Wet Test Checklist']
+- ['Sprint Notes.md', 'Sprint Notes']
+- ['Test Results.md', 'Test Results']
 - ['Change History.md', 'Change History']
