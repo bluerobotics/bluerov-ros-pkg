@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node pkg="bluerov" type="controller" name="controller">
+    <param name="~imu_pub_rate" value="20.0" type="double"/>
+    <param name="~health_pub_rate" value="2.0" type="double"/>
+    <param name="~watchdog_timeout" value="2.0" type="double"/>
+    <param name="~esc_pwm_min" value="1100" type="int"/>
+    <param name="~esc_pwm_max" value="1900" type="int"/>
+    <param name="~num_thrusters" value="8" type="int"/>
+  </node>
+</launch>

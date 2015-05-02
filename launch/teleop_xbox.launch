@@ -2,7 +2,7 @@
 
 <launch>
   <node respawn="true" pkg="joy" type="joy_node" name="joy_node" output="screen">
-    <param name="dev" value="/dev/input/js2" type="string"/>
+    <param name="dev" value="/dev/input/js0" type="string"/>
   </node>
   <node pkg="bluerov" type="teleop_xbox" name="teleop_xbox"></node>
 </launch>

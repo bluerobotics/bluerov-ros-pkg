@@ -88,7 +88,7 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   }
   else if(joy->buttons[config.enable_button] > 0) {
     std_msgs::Bool msg;
-    msg.data = false;
+    msg.data = true;
     thruster_enable_pub.publish(msg);
   }
 }

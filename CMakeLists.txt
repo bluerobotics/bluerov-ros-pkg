@@ -38,6 +38,10 @@ catkin_package(CATKIN_DEPENDS
 ## Specify additional locations of header files
 include_directories(include ${catkin_INCLUDE_DIRS})
 
+add_executable(controller src/controller.cpp)
+target_link_libraries(controller ${catkin_LIBRARIES})
+add_dependencies(controller ${catkin_EXPORTED_TARGETS})
+
 add_executable(pilot src/pilot.cpp)
 target_link_libraries(pilot ${catkin_LIBRARIES})
 add_dependencies(pilot ${catkin_EXPORTED_TARGETS})
