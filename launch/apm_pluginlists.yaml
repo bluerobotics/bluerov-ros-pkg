@@ -1,9 +1,11 @@
 plugin_blacklist:
 # common
 - ftp
+- gps
 - local_position
 - safety_area
 - setpoint_*
+- sys_time
 - vfr_hud
 - wind_estimation
 # extras

@@ -156,10 +156,10 @@ Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html
 
 ## APM Setup
 
-https://pixhawk.org/dev/ros/mavros_offboard
+We have a slight modification to the stock APMrover code for use with an APM 2.6. I better option probably a PX4 with the "OFFBOARD" mode.
 
 ```bash
-git clone -b br-ros-rov https://github.com/diydrones/ardupilot.git
+git clone -b br-ros-rov https://github.com/bluerobotics/ardupilot.git
 cd ardupilot/APMrover2
 make configure
 # gedit ../config.mk&
