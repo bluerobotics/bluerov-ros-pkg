@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   joy
+  mavros
   message_generation
   dynamic_reconfigure
 )
