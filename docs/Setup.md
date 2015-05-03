@@ -107,7 +107,7 @@ source ~/.bashrc
 
 extra:
 
-rosinstall_generator ros_comm ros_control joystick_drivers image_common image_transport_plugins --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
+rosinstall_generator ros_comm ros_control joystick_drivers image_common image_transport_plugins mavros --rosdistro indigo --deps --wet-only --exclude roslisp --tar > indigo-custom_ros.rosinstall
 export LC_ALL=C # https://github.com/ros-drivers/hokuyo_node/issues/3
 catkin_make -DCATKIN_WHITELIST_PACKAGES="bluerov;raspicam"
 
@@ -154,11 +154,19 @@ sudo udevadm trigger # to immediately reload the rules without restarting
 
 Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html#syntax) for creating new udev rules.
 
-## APM ROS Installation
+## APM Setup
 
-We use TODO to compile and program the APM from the command line.
+https://pixhawk.org/dev/ros/mavros_offboard
 
-TODO
+```bash
+git clone -b br-ros-rov https://github.com/diydrones/ardupilot.git
+cd ardupilot/APMrover2
+make configure
+# gedit ../config.mk&
+# sudo apt-get install gawk
+make
+make upload
+```
 
 ## Xbox Controller Setup
 
