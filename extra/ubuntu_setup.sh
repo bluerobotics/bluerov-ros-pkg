@@ -19,6 +19,9 @@ catkin_init_workspace
 cd ~/catkin_ws
 catkin_make
 
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
 git clone https://github.com/bluerobotics/BlueROV.git ~/catkin_ws/src/bluerov
 catkin_make
 

@@ -10,6 +10,18 @@ ROV thruster can be dangerous and are not toys. If there is a safety concern at 
 1. Send the following command: `rostopic pub thruster_enable std_msgs/Bool false --once`
 1. Open the BlueROV and unplug the battery
 
+## ROS Node Topology
+
+TODO: which nodes should be run from which computer?
+
+Node | Location
+--- | ---
+roscore | ROV or Workstation (ROV preferred)
+mavlink | ROV
+raspi cam | ROV
+pilot, simple_pilot | ROV or Workstation (ROV preferred)
+teleop_xbox | Workstation
+
 ## BlueROV Core Services
 
 Launching the BlueROV core services can be as simple as:
@@ -86,3 +98,10 @@ rosrun rqt_reconfigure rqt_reconfigure
 ![rqt_reconfigure](bluerov-rqt-reconfigure.jpg)
 
 Note that configuration changes during runtime do not persist. Make sure to update the appropriate file in the `config/` directory to persist changes.
+
+
+
+
+
+
+ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
