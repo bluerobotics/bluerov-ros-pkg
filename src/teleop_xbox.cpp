@@ -10,7 +10,7 @@
 #include <ros/console.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
-#include <mavros/CommandBool.h>
+#include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/teleop_xboxConfig.h>
 
@@ -22,7 +22,7 @@ class TeleopXbox {
   private:
     ros::NodeHandle nh;
     ros::Publisher cmd_vel_pub;
-    ros::ServiceClient arm_client;
+    ros::Publisher hazard_enable_pub;
     ros::Subscriber joy_sub;
 
     dynamic_reconfigure::Server<bluerov::teleop_xboxConfig> server;
@@ -44,7 +44,7 @@ TeleopXbox::TeleopXbox() {
 
   // connects subs and pubs
   cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  arm_client = nh.serviceClient<mavros::CommandBool>("/mavros/cmd/arming");
+  hazard_enable_pub = nh.advertise<std_msgs::Bool>("hazard_enable", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopXbox::joyCallback, this);
 
   // set initial values
@@ -80,18 +80,18 @@ void TeleopXbox::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   msg.angular.z = config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
   cmd_vel_pub.publish(msg);
 
-  // send enable action
+  // send hazards enable message
   if(joy->buttons[config.disable_button] > 0) {
-    mavros::CommandBool srv;
-    srv.request.value = false;
-    bool result = arm_client.call(srv);
-    ROS_INFO("Attempting to disarm; result is %s", result?"true":"false");
+    std_msgs::Bool hmsg;
+    hmsg.data = false;
+    hazard_enable_pub.publish(hmsg);
+    // ROS_INFO("Hazards disablesd.");
   }
   else if(joy->buttons[config.enable_button] > 0) {
-    mavros::CommandBool srv;
-    srv.request.value = true;
-    bool result = arm_client.call(srv);
-    ROS_INFO("Attempting to arm; result is %s", result?"true":"false");
+    std_msgs::Bool hmsg;
+    hmsg.data = true;
+    hazard_enable_pub.publish(hmsg);
+    // ROS_INFO("Hazards enabled.");
   }
 }
 

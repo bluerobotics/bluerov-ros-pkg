@@ -9,6 +9,7 @@
 #include <ros/ros.h>
 #include <mavros/CommandLong.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov/simple_pilotConfig.h>
 
@@ -22,13 +23,17 @@ class Pilot {
     // ros::Publisher mavlink_pub;
     ros::ServiceClient command_client;
     ros::Subscriber cmd_vel_sub;
+    ros::Subscriber hazard_enable_sub;
 
     dynamic_reconfigure::Server<bluerov::simple_pilotConfig> server;
     bluerov::simple_pilotConfig config;
 
+    bool hazards_enabled;
+
     void configCallback(bluerov::simple_pilotConfig &update, uint32_t level);
     void setServo(int index, float pulse_width);
-    void velCallback(const geometry_msgs::Twist::ConstPtr& update);
+    void velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel);
+    void hazardCallback(const std_msgs::Bool::ConstPtr& msg);
 };
 
 Pilot::Pilot() {
@@ -40,6 +45,10 @@ Pilot::Pilot() {
   // connects subs and pubs
   command_client = nh.serviceClient<mavros::CommandLong>("/mavros/cmd/command");
   cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
+  hazard_enable_sub = nh.subscribe<std_msgs::Bool>("hazard_enable", 1, &Pilot::hazardCallback, this);
+
+  // set initial values
+  hazards_enabled = false;
 }
 
 void Pilot::spin() {
@@ -75,6 +84,9 @@ void Pilot::setServo(int index, float value) {
 }
 
 void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
+  // only continue if hazards are enabled
+  if(!hazards_enabled) return;
+
   // extract cmd_vel message
   float roll     = cmd_vel->angular.x;
   float pitch    = cmd_vel->angular.y;
@@ -87,14 +99,14 @@ void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
   float thruster[6];
   thruster[0] =
     roll +
-    config.front_strafe_decouple * strafe +
+    -config.front_strafe_decouple * strafe +
     -config.front_pitch_bias * pitch +
     config.front_vertical_bias * vertical +
     config.buoyancy_control; // Vertical Left (VL)
-  thruster[1] = pitch + vertical + config.bouyancy_control; // Vertical Back (VB)
+  thruster[1] = pitch + vertical + config.buoyancy_control; // Vertical Back (VB)
   thruster[2] =
     -roll +
-    -config.front_strafe_decouple * strafe +
+    config.front_strafe_decouple * strafe +
     -config.front_pitch_bias * pitch +
     config.front_vertical_bias * vertical +
     config.buoyancy_control;  // Vertical Right (VR)
@@ -105,6 +117,20 @@ void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
   // send thruster positions
   for(int i = 0; i < 6; i++) {
    setServo(i, thruster[i]);
+  }
+}
+
+void Pilot::hazardCallback(const std_msgs::Bool::ConstPtr& msg) {
+  // save message data
+  hazards_enabled = msg->data;
+  if(hazards_enabled) ROS_INFO("Enabled thrusters.");
+  else ROS_INFO("Disabled thrusters.");
+
+  // zero thruster speeds
+  if(!hazards_enabled) {
+    for(int i = 0; i < 6; i++) {
+     setServo(i, 0);
+    }
   }
 }
 

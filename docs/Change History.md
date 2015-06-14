@@ -6,7 +6,8 @@ This project uses [semantic versioning](http://semver.org/).
 
 * Added dynamic reconfigure to `simple_pilot` node to control biases
 * Added `buoyancy_control` offset in `simple_pilot` node to account positive or negative buoyancy.
-* Added thruster enable/disable behavior to `simple_pilot` node
+* Removed mavros arming command from `teleop_xbox` node since APMrover wasn't listening to it anyway
+* Added hazard enable/disable behavior between `teleop_xbox` and `simple_pilot` nodes
 
 ## v0.1.0 - 2015/05/03
 
