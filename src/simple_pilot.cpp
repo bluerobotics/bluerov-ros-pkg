@@ -9,6 +9,8 @@
 #include <ros/ros.h>
 #include <mavros/CommandLong.h>
 #include <geometry_msgs/Twist.h>
+#include <dynamic_reconfigure/server.h>
+#include <bluerov/simple_pilotConfig.h>
 
 class Pilot {
   public:
@@ -21,14 +23,22 @@ class Pilot {
     ros::ServiceClient command_client;
     ros::Subscriber cmd_vel_sub;
 
+    dynamic_reconfigure::Server<bluerov::simple_pilotConfig> server;
+    bluerov::simple_pilotConfig config;
+
+    void configCallback(bluerov::simple_pilotConfig &update, uint32_t level);
     void setServo(int index, float pulse_width);
     void velCallback(const geometry_msgs::Twist::ConstPtr& update);
 };
 
 Pilot::Pilot() {
+  // connect dynamic reconfigure
+  dynamic_reconfigure::Server<bluerov::simple_pilotConfig>::CallbackType f;
+  f = boost::bind(&Pilot::configCallback, this, _1, _2);
+  server.setCallback(f);
+
   // connects subs and pubs
   command_client = nh.serviceClient<mavros::CommandLong>("/mavros/cmd/command");
-  // mavlink_pub = nh.advertise<mavros::Mavlink>("/mavlink/to", 1);
   cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
 }
 
@@ -43,6 +53,11 @@ void Pilot::spin() {
   }
 }
 
+void Pilot::configCallback(bluerov::simple_pilotConfig &update, uint32_t level) {
+  ROS_INFO("reconfigure request received");
+  config = update;
+}
+
 void Pilot::setServo(int index, float value) {
   // thruster values should be between 1100 and 1900 microseconds (us)
   // values less than 1500 us are backwards; values more than are forwards
@@ -50,13 +65,13 @@ void Pilot::setServo(int index, float value) {
 
   // send mavros command message
   // http://docs.ros.org/api/mavros/html/srv/CommandLong.html
-  // CMD_DO_SET_SERVO: https://pixhawk.ethz.ch/mavlink/
+  // CMD_DO_SET_SERVO (183): https://pixhawk.ethz.ch/mavlink/
   mavros::CommandLong srv;
   srv.request.command = mavros::CommandLongRequest::CMD_DO_SET_SERVO;
   srv.request.param1 = index + 1; // servos are 1-indexed here
   srv.request.param2 = pulse_width;
   bool result = command_client.call(srv);
-  ROS_INFO_STREAM("Pilot::setServo(" << index << ", " << value << ") = " << result);
+  //ROS_INFO_STREAM("Pilot::setServo(" << index << ", " << value << ") = " << result);
 }
 
 void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
@@ -70,12 +85,22 @@ void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
 
   // build thruster commands (expected to be between -1 and 1)
   float thruster[6];
-  thruster[0] = roll + 0.5*strafe + 0.5*pitch + 0.5*vertical; // Vertical Left (VL)
-  thruster[1] = -pitch + vertical; // Vertical Back (VB)
-  thruster[2] = -roll - 0.5*strafe + 0.5*pitch + 0.5*vertical; // Vertical Right (VR)
-  thruster[3] = yaw + forward; // Forward Left (FL)
+  thruster[0] =
+    roll +
+    config.front_strafe_decouple * strafe +
+    -config.front_pitch_bias * pitch +
+    config.front_vertical_bias * vertical +
+    config.buoyancy_control; // Vertical Left (VL)
+  thruster[1] = pitch + vertical + config.bouyancy_control; // Vertical Back (VB)
+  thruster[2] =
+    -roll +
+    -config.front_strafe_decouple * strafe +
+    -config.front_pitch_bias * pitch +
+    config.front_vertical_bias * vertical +
+    config.buoyancy_control;  // Vertical Right (VR)
+  thruster[3] = -yaw + forward; // Forward Left (FL)
   thruster[4] = strafe; // LATeral (LAT)
-  thruster[5] = -yaw + forward; // Forward Right (FR)
+  thruster[5] = yaw + forward; // Forward Right (FR)
 
   // send thruster positions
   for(int i = 0; i < 6; i++) {
