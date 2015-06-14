@@ -56,6 +56,7 @@ void Pilot::setServo(int index, float value) {
   srv.request.param1 = index + 1; // servos are 1-indexed here
   srv.request.param2 = pulse_width;
   bool result = command_client.call(srv);
+  ROS_INFO_STREAM("Pilot::setServo(" << index << ", " << value << ") = " << result);
 }
 
 void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {

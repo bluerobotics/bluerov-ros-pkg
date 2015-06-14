@@ -51,20 +51,44 @@ TODO
 
 ## ROV Preparation
 
-We are using a RaspberryPi as our embedded ROV computer. We recommend installing Ubuntu 14.04 on the RaspberryPi over Rasbian OS because of the ease of installing ROS packages. On Ubuntu, packages can be installed as binaries from `apt`, but on Rasbian, most packages must be installed from source.
+We are using a RaspberryPi 2 as our embedded ROV computer. We recommend installing Ubuntu 14.04 on the RaspberryPi over Rasbian OS because of the ease of installing ROS packages. On Ubuntu, packages can be installed as binaries from `apt`, but on Rasbian, most packages must be installed from source.
 
 ### Flashing an SD Card with Ubuntu
 
-http://elinux.org/RPi_Resize_Flash_Partitions#Manually_resizing_the_SD_card_on_Linux
-https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=24993
+Follow [these instructions](https://wiki.ubuntu.com/ARM/RaspberryPi) to flash Ubuntu onto an SD card for the RaspberryPi. Once the install has completed, use a keyboard and monitor to complete the partition resizing and OS essentials section. The username and password for the standard Ubuntu image is `ubuntu:ubuntu`. After the SSH server has been installed, you can work remotely.
+
+There are no Raspbian-specific utilities included, specifically no automatic root resizer. However, it's not hard to do manually. Once booted, you'll need to resize the primary partition and create a swapfile:
+
+```bash
+sudo fdisk /dev/mmcblk0
+# Delete the second partition (d, 2),
+# then re-create it using the defaults (n, p, 2, enter, enter),
+# then write and exit (w)
+# then restart.
+
+sudo shutdown -r now
+
+sudo resize2fs /dev/mmcblk0p2
+sudo apt-get install dphys-swapfile # this step might take a while
+```
+
+You can use `dh -f` to verify the partition has been resized.
+
+If you get stuck, this [elinux page](http://elinux.org/RPi_Resize_Flash_Partitions#Manually_resizing_the_SD_card_on_Linux
+https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=24993) is also a good resource for flashing SD cards.
 
 ### Setup OS Essentials
 
 ```bash
 sudo hostname bluerov
-echo echo "bluerov" > /etc/hostname
+sudo sh -c 'echo "bluerov" > /etc/hostname'
 
-sudo apt-get install openssh-server wpasupplicant git build-essential avahi-daemon screen -y
+sudo apt-get update
+sudo apt-get install libraspberrypi-bin libraspberrypi-dev openssh-server wpasupplicant git build-essential avahi-daemon screen linux-firmware -y
+sudo apt-get upgrade
+
+# some libraries require the libraspberrypi-bin and libraspberrypi-dev files at /opt/vc
+sudo ln -s /usr /opt/vc
 ```
 
 ### ROV Wifi Network Setup
@@ -90,6 +114,8 @@ network={
 Next, configure your wireless adapter by adding or modifying the settings in `/etc/network/interfaces`:
 
 ```
+allow-hotplug wlan0
+iface wlan0 inet manual
 wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 iface wlan0 inet dhcp
 auto wlan0
@@ -124,13 +150,17 @@ Note to self: In the future, try out a PX4 with the "OFFBOARD" mode.
 
 ### ROV Camera Configuration
 
-to get the camera working in Ubuntu 14.04:
+To get the camera working in Ubuntu 14.04:
 
-https://www.raspberrypi.org/forums/viewtopic.php?f=56&t=100553
-
+```bash
+sudo sh -c 'echo "start_x=1\ngpu_mem=128" >> /boot/config.txt'
 sudo apt-get install libraspberrypi-dev libraspberrypi-bin
+sudo shutdown -r now
 raspistill -o test.jpg
 scp ubuntu@bluerov:~/test.jpg ~/
+```
+
+For more information, check out [this forum post](https://www.raspberrypi.org/forums/viewtopic.php?f=56&t=100553).
 
 ### ROV ROS Installation
 
@@ -185,7 +215,7 @@ Then install the `bluerov` and `raspicam_node` packages and rebuild.
 
 ```bash
 cd ~/catkin_ws/src/
-git clone https://github.com/bluerobotics/bluerov-ros-pkg.git
+git clone https://github.com/bluerobotics/bluerov-ros-pkg.git bluerov
 git clone https://github.com/fpasteau/raspicam_node
 
 cd ~/catkin_ws/
@@ -195,17 +225,11 @@ catkin_make
 Next, set up udev rules to make devices easier to find:
 
 ```bash
-sudo cp ~/catkin_ws/src/bluerov/extra/99-bluerov.rules /etc/udev/rules.d/
+sudo cp ~/catkin_ws/src/bluerov-ros-pkg/extra/99-bluerov.rules /etc/udev/rules.d/
 sudo udevadm trigger # to immediately reload the rules without restarting
 ```
 
 Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html#syntax) for creating new udev rules.
-
-
-sudo vi /boot/config.txt
-
-sudo cp ~/catkin_ws/src/bluerov/extra/99-bluerov.rules /etc/udev/rules.d/
-sudo udevadm trigger
 
 ## Direct Network Configuration
 
