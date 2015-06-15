@@ -99,13 +99,19 @@ void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& cmd_vel) {
   float thruster[6];
   thruster[0] =
     roll +
+    -config.front_forward_decouple * forward +
     -config.front_strafe_decouple * strafe +
     -config.front_pitch_bias * pitch +
     config.front_vertical_bias * vertical +
     config.buoyancy_control; // Vertical Left (VL)
-  thruster[1] = pitch + vertical + config.buoyancy_control; // Vertical Back (VB)
+  thruster[1] =
+    config.front_forward_decouple * forward +
+    pitch +
+    vertical +
+    config.buoyancy_control; // Vertical Back (VB)
   thruster[2] =
     -roll +
+    -config.front_forward_decouple * forward +
     config.front_strafe_decouple * strafe +
     -config.front_pitch_bias * pitch +
     config.front_vertical_bias * vertical +
