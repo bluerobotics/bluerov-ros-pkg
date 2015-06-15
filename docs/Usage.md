@@ -158,3 +158,21 @@ ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearp
 ## Saving Data to ROS Bags
 
 ## Exporting Video from ROS Bags
+
+Old process:
+
+```bash
+# terminal window 1
+roscore
+rosbag play -d 2 something.bag
+
+# terminal window 2
+mkdir export
+cd export
+rosrun image_view extract_images image:=/camera/image _image_transport:=compressed
+
+# in terminal window 2 after export has finished
+cd ..
+mencoder "mf://export/*.jpg" -mf type=jpg:fps=30 -o output.mpg -speed 1 -ofps 30 -ovc lavc -lavcopts vcodec=mpeg2video:vbitrate=2500 -oac copy -of mpeg
+ 1341  mkdir bag1
+```
