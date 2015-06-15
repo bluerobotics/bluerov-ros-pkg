@@ -1,4 +1,4 @@
-# Wet Test Checklist
+# Checklist
 
 If you don't have a body of water within a couple of feet of your workstation, performing a wet test can turn into a big ordeal. Here is a checklist of items that we use to ensure everything is good to go before leaving for a wet test or actual mission.
 
@@ -12,11 +12,11 @@ Item | Notes
 --- | ---
 ROV | dry-run motors, teleop control, and camera ahead of time
 ROV batteries | check charge
-external camera | check charge
+external camera(s) | check charge
 teleop controller | check charge and don't forget wireless dongle
 workstation/laptop | check charge
 weights | to fine-tune buoyancy
-silicone grease |
+silicone grease | to keep o-rings and penetrators lubricated
 
 ## Final Checks
 

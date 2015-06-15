@@ -7,8 +7,55 @@ Once you have completed [Setup](Setup.md), this guide will show you how to launc
 ROV thruster can be dangerous and are not toys. If there is a safety concern at any point while using the BlueROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
 
 1. Hit the red "B" button on the Xbox controller (if connected and configured as such)
-1. Send the following command: `rostopic pub thruster_enable std_msgs/Bool false --once`
+1. Send the following command: `rostopic pub hazard_enable std_msgs/Bool false --once`
 1. Open the BlueROV and unplug the battery
+
+## Thruster Configuration
+
+The code base currently supports BlueRobotics T100 thrusters. The thrusters are labeled as:
+
+Index | Code | Description
+--- | --- | ---
+0 | VL | Vertical Left
+1 | VB | Vertical Back
+2 | VR | Vertical Right
+3 | FL | Forward Left
+4 | LAT | Lateral
+5 | FR | Forward Right
+
+
+ADD TO DOCUMENTATION
+---
+screen shots
+how to use dyn_config
+how to enable the thrusters, how to wire the thrusters correctly
+how to flip gains
+
+
+
+![BlueROV Schematic](BlueROV%20Schematic.jpg)
+
+Note: The xml version of embedded diagrams can be modified with [https://www.draw.io/](https://www.draw.io/).
+
+## ROS Node Overview
+
+#### roscore
+
+todo
+
+#### raspicam_node
+
+todo
+
+#### teleop_xbox
+
+todo
+
+#### 
+
+todo
+
+####
 
 ## ROS Node Topology
 
@@ -24,20 +71,22 @@ teleop_xbox | Workstation
 
 ## BlueROV Core Services
 
-Launching the BlueROV core services can be as simple as:
+Launching the BlueROV core services is as simple as:
 
 ```bash
-ssh viki@bluerov -c 'roslaunch bluerov core.launch'
+ssh ubuntu@bluerov -c 'roslaunch bluerov core.launch'
 ```
 
-If you're in the middle of development, however, you'll likely want to turn on services with a bit more granularity. For starters, run the follow three commands in three separate terminal windows:
+If you're in the middle of development, however, you'll likely want to turn on services with a bit
+
+For more granularity, you can run the nodes individually in separate terminal windows:
 
 ```bash
 # window 1
 roscore
 
 # window 2
-roslaunch bluerov serial.launch
+roslaunch bluerov apm .launch
 
 # window 3
 roslaunch bluerov pilot.launch
@@ -105,3 +154,7 @@ Note that configuration changes during runtime do not persist. Make sure to upda
 
 
 ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
+
+## Saving Data to ROS Bags
+
+## Exporting Video from ROS Bags

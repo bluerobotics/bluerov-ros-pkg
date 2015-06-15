@@ -1,9 +1,5 @@
 # Setup
 
-The `bluerov-ros-pkg` software stack is built on [ROS](http://www.ros.org/), the Robotic Operation System. It is compatible with the BlueRobotics BlueROV and BlueROV-compatible vehicles. Compatible vehicles have an on-board Linux computer with a MAVLink-compatible controller interfaces with low-level sensors and actuators. Users are also expected to have an onshore computer for tele-operation (referred to here as the "workstation" computer.)
-
-## Overview
-
 This setup guide will help you get the workstation and ROV computers up and running with ROS. The next two sections cover installation instructions specific to the two platforms. The following section covers the installation of the BlueROV ROS package, which is needed for both platforms.
 
 ## Workstation Preparation
@@ -44,10 +40,6 @@ Choose the 64-bit version if your machine has the resources to support it, other
 For reference, the hostname on the VM defaults to `c3po` with the username:password combo defaulting to `viki:viki`.
 
 ProTip: If you decide to use a shared folder between your host machine and the VM, be sure to run `sudo usermod -aG vboxsf $(whoami)` and restart or login/logout in order to have write privileges in the shared folder from the VM.
-
-### Xbox Controller Setup
-
-TODO
 
 ## ROV Preparation
 
