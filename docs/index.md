@@ -22,7 +22,7 @@ This package is designed to work with a variety of ROV platforms, but is focused
     - [BlueRobotics T100](https://www.bluerobotics.com/store/thrusters/t100-thruster/) and [T200](https://www.bluerobotics.com/store/thrusters/t200-thruster/) thrusters are supported
 * A method of controlling the thrusters (ESCs)
     - PWM over MAVLink with the [APM 2.6](https://store.3drobotics.com/products/apm-2-6-kit-1)
-    - PWM over I2C with a [servo driver PCB](http://www.adafruit.com/product/815)
+    - PWM over I2C with a [RaspberryPi servo hat](https://www.adafruit.com/products/2327)
     - Direct I2C control (BlueESCs); I2C level shifter required
 * Optional sensors
     - The [APM 2.6](https://store.3drobotics.com/products/apm-2-6-kit-1) is supported for IMU, compass, internal pressure, and battery voltage

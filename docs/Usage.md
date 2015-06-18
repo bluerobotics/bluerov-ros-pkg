@@ -4,103 +4,69 @@ Once you have completed [Setup](Setup.md), this guide will show you how to launc
 
 ## Safety
 
-ROV thruster can be dangerous and are not toys. If there is a safety concern at any point while using the BlueROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
+ROV thrusters can be very dangerous. If there is a safety concern at any point while using the BlueROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
 
 1. Hit the red "B" button on the Xbox controller (if connected and configured as such)
 1. Send the following command: `rostopic pub hazard_enable std_msgs/Bool false --once`
 1. Open the BlueROV and unplug the battery
 
-## Thruster Configuration
-
-The code base currently supports BlueRobotics T100 thrusters. The thrusters are labeled as:
-
-Index | Code | Description
---- | --- | ---
-0 | VL | Vertical Left
-1 | VB | Vertical Back
-2 | VR | Vertical Right
-3 | FL | Forward Left
-4 | LAT | Lateral
-5 | FR | Forward Right
-
-
-ADD TO DOCUMENTATION
----
-screen shots
-how to use dyn_config
-how to enable the thrusters, how to wire the thrusters correctly
-how to flip gains
-
-
-
-![BlueROV Schematic](BlueROV%20Schematic.jpg)
-
-Note: The xml version of embedded diagrams can be modified with [https://www.draw.io/](https://www.draw.io/).
-
 ## ROS Node Overview
 
-#### roscore
-
-todo
-
-#### raspicam_node
-
-todo
-
-#### teleop_xbox
-
-todo
-
-#### 
-
-todo
-
-####
-
-## ROS Node Topology
-
-TODO: which nodes should be run from which computer?
+ROS "nodes" are small programs that each accomplish a specific task. A group of ROS nodes can be used together to operate an entire platform. Here is of some common nodes and where they should be executed:
 
 Node | Location
 --- | ---
 roscore | ROV or Workstation (ROV preferred)
+teleop_xbox, joy | Workstation
+simple_pilot | ROV or Workstation (ROV preferred)
 mavlink | ROV
-raspi cam | ROV
-pilot, simple_pilot | ROV or Workstation (ROV preferred)
-teleop_xbox | Workstation
+raspicam_node | ROV
 
-## BlueROV Core Services
+ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
+
+### roscore
+
+The `roscore` node is the primary communications relay between other ROS nodes. Other ROS nodes cannot be ran without the `roscore` service and nodes running on remote machines must have the correct IP address of the intended `roscore`. The node can be started by running `roscore`. This also starts the `rosout` debugging service.
+
+### joy and teleop_xbox
+
+The `joy` node connects to a generic Linux joystick and publishes changes in button and stick state.
+
+The `teleop_xbox` node subscribers to the `joy` topic that the `joy` node produces. It converts the button and stick movements into translational and angular velocity commands and publishes these over the `cmd_vel` topic.
+
+### simple_pilot
+
+todo
+
+### mavlink
+
+todo
+
+### raspicam_node
+
+This service will publish a video stream over the network when a RaspberryPi camera is attached to a Raspberry Pi.
+
+## Launch Files
+
+Launch files can be used to run multiple nodes at once. In addition, `roscore` is started automatically if it cannot be found at the `ROS_MASTER_URI`. This package ships with the `rov_core` launch file to run all of the required programs on the ROV itself. Keep in mind that it is usually more convenient to run nodes in independent terminal windows during development.
 
 Launching the BlueROV core services is as simple as:
 
 ```bash
-ssh ubuntu@bluerov -c 'roslaunch bluerov core.launch'
+ssh ubuntu@bluerov -c 'roslaunch bluerov rov_core.launch'
 ```
 
-If you're in the middle of development, however, you'll likely want to turn on services with a bit
+## ROS Over Multiple Machines
 
-For more granularity, you can run the nodes individually in separate terminal windows:
+http://wiki.ros.org/ROS/NetworkSetup
 
-```bash
-# window 1
-roscore
-
-# window 2
-roslaunch bluerov apm .launch
-
-# window 3
-roslaunch bluerov pilot.launch
-```
-
-## Ground Station Tele-Operation
-
-TODO: set remote IP, launch xbox_teleop
+http://wiki.ros.org/ROS/Tutorials/MultipleMachines
 
 ```bash
 alias usebluerov='export ROS_MASTER_URI=http://bluerov:11311'
 ```
 
-## Interrogating ROS
+## ROS Introspection Nodes
 
 ROS includes a variety of tools to interrogate a running system. This is a brief overview on a few of them.
 
@@ -148,14 +114,9 @@ rosrun rqt_reconfigure rqt_reconfigure
 
 Note that configuration changes during runtime do not persist. Make sure to update the appropriate file in the `config/` directory to persist changes.
 
-
-
-
-
-
-ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
-
 ## Saving Data to ROS Bags
+
+http://wiki.ros.org/rosbag
 
 ## Exporting Video from ROS Bags
 
@@ -176,3 +137,34 @@ cd ..
 mencoder "mf://export/*.jpg" -mf type=jpg:fps=30 -o output.mpg -speed 1 -ofps 30 -ovc lavc -lavcopts vcodec=mpeg2video:vbitrate=2500 -oac copy -of mpeg
  1341  mkdir bag1
 ```
+
+## First Time Setup
+
+### Thruster Configuration
+
+The code base currently supports BlueRobotics T100 thrusters. The thrusters are labeled as:
+
+Index | Code | Description
+--- | --- | ---
+0 | VL | Vertical Left
+1 | VB | Vertical Back
+2 | VR | Vertical Right
+3 | FL | Forward Left
+4 | LAT | Lateral
+5 | FR | Forward Right
+
+todo: how to wire up and test direction
+
+### Setting Thruster Gains
+
+todo
+
+## Auto Launch ROS on Startup
+
+https://github.com/clearpathrobotics/robot_upstart
+
+## Trash Section
+
+![BlueROV Schematic](BlueROV%20Schematic.jpg)
+
+Note: The xml version of embedded diagrams can be modified with [https://www.draw.io/](https://www.draw.io/).

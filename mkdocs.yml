@@ -8,5 +8,6 @@ pages:
 - ['Usage.md', 'Usage']
 - ['Checklist.md', 'Checklist']
 - ['Test Results.md', 'Test Results']
-- ['Change History.md', 'Change History']
 - ['Todo.md', 'Todo']
+- ['Contributing.md', 'Contributing']
+- ['Change History.md', 'Change History']

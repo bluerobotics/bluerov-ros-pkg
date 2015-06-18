@@ -2,6 +2,27 @@
 
 The follow items are high-level areas that we'd like to improve upon.
 
+## (SOON) Add support for RasPi PWM hat
+
+This adds a second method of controlling servos.
+
+## (SOON) Add auto rise-to-surface after a timeout
+
+This feature will help save a disabled vehicle.
+
+## (SOON) Add Closed-Loop Orientation Control
+
+Utilize the IMU and a future depth sensor to improve tolerance of disturbances.
+
+* Get the EKF working with IMU and odometry
+* Start on the closed-loop orientation stuff
+    * decouple motion
+    * position hold
+
+## (SOON) Use a more standard method for disabling thruster control
+
+I think there is a GUI kill switch. See what message or service it is using.
+
 ## Improve Manual Driving from Surface Computer
 
 Add a HUD setup to improve situational awareness to driver.
@@ -23,15 +44,6 @@ Add a HUD setup to improve situational awareness to driver.
 * Show orientation of sub in rviz
 * Publish odometry data from thruster commands (should be able to see full movement in rviz now)
     * add time-trail in rviz to see position over time
-
-## Add Closed-Loop Position and Orientation Control
-
-Utilize the IMU and a future depth sensor to improve tolerance of disturbances.
-
-* Get the EKF working with IMU and odometry
-* Start on the closed-loop orientation stuff
-    * decouple motion
-    * position hold
 
 ## Keyboard control of the ROV
 
