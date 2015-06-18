@@ -4,11 +4,11 @@ Once you have completed [Setup](Setup.md), this guide will show you how to launc
 
 ## Safety
 
-ROV thrusters can be very dangerous. If there is a safety concern at any point while using the BlueROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
+ROV thrusters can be very dangerous. If there is a safety concern at any point while using your ROV, immediately disable the thrusters. Here are three ways to do this, starting with the most convenient method:
 
 1. Hit the red "B" button on the Xbox controller (if connected and configured as such)
 1. Send the following command: `rostopic pub hazard_enable std_msgs/Bool false --once`
-1. Open the BlueROV and unplug the battery
+1. Disconnect power from the ROV by unplugging batteries and/or unplugging the umbilical
 
 ## ROS Node Overview
 
@@ -18,7 +18,7 @@ Node | Location
 --- | ---
 roscore | ROV or Workstation (ROV preferred)
 teleop_xbox, joy | Workstation
-simple_pilot | ROV or Workstation (ROV preferred)
+simple_pilot, pilot | ROV or Workstation (ROV preferred)
 mavlink | ROV
 raspicam_node | ROV
 
@@ -34,13 +34,17 @@ The `joy` node connects to a generic Linux joystick and publishes changes in but
 
 The `teleop_xbox` node subscribers to the `joy` topic that the `joy` node produces. It converts the button and stick movements into translational and angular velocity commands and publishes these over the `cmd_vel` topic.
 
-### simple_pilot
+### pilot and simple_pilot
 
-todo
+The pilot nodes converts `cmd_vel` messages into thruster throttle commands. Only one node should be used at a time.
+
+The `simple_pilot` node uses experimentally established gain with a specific set of decoupling terms to successfully control an ROV. When used in tandem with `rqt_reconfigure` (see the section on the subject), gains can be tested and tuned very quickly.
+
+The `pilot` node (still in work) automatically calculates gains from a thruster configuration stored in the robot URDF file.
 
 ### mavlink
 
-todo
+The `mavlink` node relays messages over serial with a mavlink capable device (an APM in this case.) This is required if you are using an APM on your ROV.
 
 ### raspicam_node
 
