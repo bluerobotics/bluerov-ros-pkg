@@ -1,6 +1,6 @@
 # Usage
 
-Once you have completed [Setup](Setup.md), this guide will show you how to launch the different ROS nodes.
+Once you have completed [Setup](Setup.md), this guide will show you how to configure the software and launch the different ROS nodes.
 
 ## Safety
 
@@ -18,15 +18,16 @@ Node | Location
 --- | ---
 roscore | ROV or Workstation (ROV preferred)
 teleop_xbox, joy | Workstation
+rqt | Workstation
 simple_pilot, pilot | ROV or Workstation (ROV preferred)
 mavlink | ROV
 raspicam_node | ROV
 
-ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
+Node binaries can be executed directly, however we normally use launch files to run nodes in groups and to contain configuration parameters. The sections below contain the appropriate launch file for running each binary.
 
 ### roscore
 
-The `roscore` node is the primary communications relay between other ROS nodes. Other ROS nodes cannot be ran without the `roscore` service and nodes running on remote machines must have the correct IP address of the intended `roscore`. The node can be started by running `roscore`. This also starts the `rosout` debugging service.
+The `roscore` node is the primary communications relay between other ROS nodes. ROS nodes cannot be ran without the `roscore` service and nodes running on remote machines must have the correct IP address of the intended `roscore`. This also starts the `rosout` debugging service. The `roscore` and`rosout` applications are started automatically when running a launch file if an active `roscore` cannot be found at the `ROS_MASTER_URI`.
 
 ### joy and teleop_xbox
 
@@ -34,27 +35,53 @@ The `joy` node connects to a generic Linux joystick and publishes changes in but
 
 The `teleop_xbox` node subscribers to the `joy` topic that the `joy` node produces. It converts the button and stick movements into translational and angular velocity commands and publishes these over the `cmd_vel` topic.
 
+Both of the nodes can launch with the `teleop_xbox` launch file:
+
+```bash
+roslaunch bluerov teleop_xbox.launch
+```
+
+### rqt
+
+The `rqt` framework is a collection of Qt widgets with ROS baked in. A custom "perspective" is available in this packages which pre-loads a Qt session with a variety of widgets useful with ROVs like displaying the live camera feed. This `rqt` perspective is the primary feedback for the human navigator on the surface. Launch it with:
+
+```bash
+roslaunch bluerov rqt.launch
+```
+
+Learn more about individual rqt widgets in the "ROS Introspection" section below.
+
 ### pilot and simple_pilot
 
 The pilot nodes converts `cmd_vel` messages into thruster throttle commands. Only one node should be used at a time.
 
-The `simple_pilot` node uses experimentally established gain with a specific set of decoupling terms to successfully control an ROV. When used in tandem with `rqt_reconfigure` (see the section on the subject), gains can be tested and tuned very quickly.
+The `simple_pilot` node uses experimentally established gain with a specific set of decoupling terms to successfully control an ROV. When used in tandem with `rqt_reconfigure` (see the section on the subject), gains can be tested and tuned very quickly. Launch it with:
+
+```bash
+roslaunch bluerov simple_pilot.launch
+```
 
 The `pilot` node (still in work) automatically calculates gains from a thruster configuration stored in the robot URDF file.
 
 ### mavlink
 
-The `mavlink` node relays messages over serial with a mavlink capable device (an APM in this case.) This is required if you are using an APM on your ROV.
+The `mavlink` node relays messages over serial with a mavlink capable device (an APM in this case.) This is required if you are using an APM on your ROV. Launch it with:
+
+```bash
+roslaunch bluerov apm.launch
+```
 
 ### raspicam_node
 
-This service will publish a video stream over the network when a RaspberryPi camera is attached to a Raspberry Pi.
+This service will publish a video stream over the network when a RaspberryPi camera is attached to a Raspberry Pi. Launch it with:
 
-## Launch Files
+```bash
+roslaunch bluerov camera.launch
+```
 
-Launch files can be used to run multiple nodes at once. In addition, `roscore` is started automatically if it cannot be found at the `ROS_MASTER_URI`. This package ships with the `rov_core` launch file to run all of the required programs on the ROV itself. Keep in mind that it is usually more convenient to run nodes in independent terminal windows during development.
+## ROV Batch Launch
 
-Launching the BlueROV core services is as simple as:
+This package ships with the `rov_core` launch file to run all of the required programs on the ROV itself. With it, launching the BlueROV core services is as simple as:
 
 ```bash
 ssh ubuntu@bluerov -c 'roslaunch bluerov rov_core.launch'
