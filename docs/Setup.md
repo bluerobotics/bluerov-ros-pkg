@@ -8,7 +8,9 @@ ROS is a powerful framework, but only once it has been installed... We highly re
 
 If you intend to run any of the 3D ROS applications (rviz, gazebo), you should either install Ubuntu directly onto the computer (not as a VM) or make sure that your computer has a discrete graphics card if you plan on running Ubuntu through a virtual machine. You've been warned!
 
-### Workstation ROS Installation - Direct 
+ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearpathrobotics.com/wp-content/uploads/2014/01/ROS-Cheat-Sheet-v1.01.pdf) from Clearpath Robotics.
+
+### Workstation ROS Installation - Direct
 
 Installing ROS directly onto an Ubuntu machine is the best way to develop with ROS. You will experience the fewest hiccups and you should be able to find plenty of support since this is the most common install method for ROS. Please view the [official ROS installation instructions](http://wiki.ros.org/indigo/Installation/Ubuntu) for the most up-to-date instructions. Those instructions basically boil down to this:
 
@@ -203,11 +205,20 @@ source ~/.bashrc
 echo $ROS_PACKAGE_PATH
 ```
 
-Then install the `bluerov` and `raspicam_node` packages and rebuild.
+Then install the `bluerov` package rebuild:
 
 ```bash
 cd ~/catkin_ws/src/
 git clone https://github.com/bluerobotics/bluerov-ros-pkg.git bluerov
+
+cd ~/catkin_ws/
+catkin_make
+```
+
+On the ROV / RaspberryPi only, you'll also want to install and build the `raspicam_node`:
+
+```bash
+cd ~/catkin_ws/src/
 git clone https://github.com/fpasteau/raspicam_node
 
 cd ~/catkin_ws/
