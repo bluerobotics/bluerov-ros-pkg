@@ -2,6 +2,10 @@
 
 This project uses [semantic versioning](http://semver.org/).
 
+## v0.3.0 - 2015/06/23
+
+* Updated document ahead of public announcement
+
 ## v0.2.0 - 2015/06/15
 
 * Added dynamic reconfigure to `simple_pilot` node to control biases

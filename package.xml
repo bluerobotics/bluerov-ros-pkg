@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>bluerov</name>
-  <version>0.0.0</version>
+  <version>0.3.0</version>
   <description>Robotic underwater vehicle propelled by the BlueRobotics thrusters.</description>
 
   <maintainer email="josh@javconcepts.com">Josh Villbrandt</maintainer>
