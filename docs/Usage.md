@@ -12,7 +12,7 @@ ROV thrusters can be very dangerous. If there is a safety concern at any point w
 
 ## ROS Node Overview
 
-ROS "nodes" are small programs that each accomplish a specific task. A group of ROS nodes can be used together to operate an entire platform. Here is of some common nodes and where they should be executed:
+ROS "nodes" are small programs that each accomplish a specific task. A group of ROS nodes can be used together to operate an entire platform. Here are some common nodes and where they should be executed:
 
 Node | Location
 --- | ---
@@ -33,7 +33,7 @@ The `roscore` node is the primary communications relay between other ROS nodes. 
 
 The `joy` node connects to a generic Linux joystick and publishes changes in button and stick state.
 
-The `teleop_xbox` node subscribers to the `joy` topic that the `joy` node produces. It converts the button and stick movements into translational and angular velocity commands and publishes these over the `cmd_vel` topic.
+The `teleop_xbox` node subscribes to the `joy` topic that the `joy` node produces. It converts the button and stick movements into translational and angular velocity commands and publishes these over the `cmd_vel` topic.
 
 Both of the nodes can launch with the `teleop_xbox` launch file:
 
@@ -55,7 +55,7 @@ Learn more about individual rqt widgets in the "ROS Introspection" section below
 
 The pilot nodes converts `cmd_vel` messages into thruster throttle commands. Only one node should be used at a time.
 
-The `simple_pilot` node uses experimentally established gain with a specific set of decoupling terms to successfully control an ROV. When used in tandem with `rqt_reconfigure` (see the section on the subject), gains can be tested and tuned very quickly. Launch it with:
+The `simple_pilot` node uses experimentally established gains with a specific set of decoupling terms to successfully control an ROV. When used in tandem with `rqt_reconfigure` ([see the section on the subject](#dynamic-reconfiguration)), gains can be tested and tuned very quickly. Launch `simple_pilot` with:
 
 ```bash
 roslaunch bluerov simple_pilot.launch

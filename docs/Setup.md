@@ -179,6 +179,7 @@ By this point, you should have already installed ROS on both the workstation and
 Let's start by making sure we have all of our dependencies installed:
 
 ```bash
+sudo apt-get update
 sudo apt-get install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six -y
 sudo pip install rosdep rosinstall_generator wstool rosinstall
 
@@ -188,7 +189,7 @@ sudo apt-get install ros-indigo-image-common ros-indigo-image-transport-plugins 
 First establish a catkin workspace if you haven't already:
 
 ```bash
-# create and init workspace
+# create and init workspace (already made on Nootrix VM)
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 catkin_init_workspace
@@ -228,7 +229,7 @@ catkin_make
 Next, set up udev rules to make devices easier to find:
 
 ```bash
-sudo cp ~/catkin_ws/src/bluerov-ros-pkg/extra/99-bluerov.rules /etc/udev/rules.d/
+sudo cp ~/catkin_ws/src/bluerov/extra/99-bluerov.rules /etc/udev/rules.d/
 sudo udevadm trigger # to immediately reload the rules without restarting
 ```
 
