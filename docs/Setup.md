@@ -49,7 +49,17 @@ We are using a RaspberryPi 2 as our embedded ROV computer. We recommend installi
 
 ### Flashing an SD Card with Ubuntu
 
-Follow [these instructions](https://wiki.ubuntu.com/ARM/RaspberryPi) to flash Ubuntu onto an SD card for the RaspberryPi. Once the install has completed, use a keyboard and monitor to complete the partition resizing and OS essentials section. The username and password for the standard Ubuntu image is `ubuntu:ubuntu`. After the SSH server has been installed, you can work remotely.
+Follow [these instructions](https://wiki.ubuntu.com/ARM/RaspberryPi) to flash Ubuntu onto an SD card for the RaspberryPi. 
+
+```bash
+cd ~/Downloads
+http://www.finnie.org/software/raspberrypi/2015-04-06-ubuntu-trusty.zip
+df -h # determine the file path of the SD card, /dev/sdb in this case
+eject /dev/sdb
+sudo bmaptool copy --bmap ~/Downloads/2015-04-06-ubuntu-trusty.bmap ~/Downloads/2015-04-06-ubuntu-trusty.img /dev/sdb
+```
+
+Once the install has completed, use a keyboard and monitor to complete the partition resizing and to set up networking. The username and password for the standard Ubuntu image is `ubuntu:ubuntu`. After the SSH server has been installed, you can work remotely.
 
 There are no Raspbian-specific utilities included, specifically no automatic root resizer. However, it's not hard to do manually. Once booted, you'll need to resize the primary partition and create a swapfile:
 
@@ -63,27 +73,12 @@ sudo fdisk /dev/mmcblk0
 sudo shutdown -r now
 
 sudo resize2fs /dev/mmcblk0p2
-sudo apt-get install dphys-swapfile # this step might take a while
 ```
 
 You can use `dh -f` to verify the partition has been resized.
 
 If you get stuck, this [elinux page](http://elinux.org/RPi_Resize_Flash_Partitions#Manually_resizing_the_SD_card_on_Linux
 https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=24993) is also a good resource for flashing SD cards.
-
-### Setup OS Essentials
-
-```bash
-sudo hostname bluerov
-sudo sh -c 'echo "bluerov" > /etc/hostname'
-
-sudo apt-get update
-sudo apt-get install libraspberrypi-bin libraspberrypi-dev openssh-server wpasupplicant git build-essential avahi-daemon screen linux-firmware -y
-sudo apt-get upgrade
-
-# some libraries require the libraspberrypi-bin and libraspberrypi-dev files at /opt/vc
-sudo ln -s /usr /opt/vc
-```
 
 ### ROV Wifi Network Setup
 
@@ -123,6 +118,20 @@ ping google.com
 ```
 
 For more information, check out [this guide](https://kerneldriver.wordpress.com/2012/10/21/configuring-wpa2-using-wpa_supplicant-on-the-raspberry-pi/).
+
+### Setup OS Essentials
+
+```bash
+sudo hostname bluerov
+sudo sh -c 'echo "bluerov" > /etc/hostname'
+
+sudo apt-get update
+sudo apt-get install dphys-swapfile libraspberrypi-bin libraspberrypi-dev openssh-server wpasupplicant git build-essential avahi-daemon screen linux-firmware -y
+sudo apt-get upgrade
+
+# some libraries require the libraspberrypi-bin and libraspberrypi-dev files at /opt/vc
+sudo ln -s /usr /opt/vc
+```
 
 ## ROV APM Setup
 
@@ -237,7 +246,7 @@ Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html
 
 ## Direct Network Configuration
 
-When performing tele-operated tests and missions, it can be desirable to connect the workstation and ROV together using a direct Ethernet connection. Wifi connectivity obviously isn't an option through water, and a direct Ethernet connection eliminates the need for a network switch between the two computers.
+When performing tele-operated tests and missions, it can be desirable to connect the workstation and ROV together using a direct Ethernet connection. Wifi connectivity obviously isn't an option through water and a direct Ethernet connection eliminates the need for a network switch between the two computers.
 
 On the workstation machine, choose an Ethernet interface to dedicate to the ROV. We will use `eth0`. Modify the file `/etc/network/interfaces` by adding or replacing the following information for your chosen interface:
 
