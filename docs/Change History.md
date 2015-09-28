@@ -2,6 +2,11 @@
 
 This project uses [semantic versioning](http://semver.org/).
 
+## v0.4.0 - 2015/10/01
+
+* Fixed `CMD_DO_SET_SERVO` is not a member compile error
+* Added documentation for pre-made SD card image
+
 ## v0.3.0 - 2015/06/23
 
 * Updated document ahead of public announcement

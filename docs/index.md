@@ -13,7 +13,7 @@ This package is designed to work with a variety of ROV platforms, but is focused
 * A surface computer running Ubuntu (through a virtual machine is OK)
 * An input device for manual control attached to the surface computer
     - We are using a [wireless Xbox 360 controller](http://www.amazon.com/Xbox-360-Wireless-Controller-Black/dp/B00FYWYJ2E/ref=sr_1_2?s=electronics&ie=UTF8&qid=1434390319&sr=1-2&keywords=xbox+360+wireless+controller) and [USB dongle](http://www.amazon.com/Xbox-Wireless-Gaming-Receiver-Windows/dp/B000HZFCT2/ref=sr_1_9?s=electronics&ie=UTF8&qid=1434390346&sr=1-9&keywords=xbox+360+wireless+controller+usb)
-* An on-board computer running Ubuntu
+* An on-board computer running Ubuntu w/ Ethernet port for tether
     - We are using a [RaspberryPi 2 B](https://www.raspberrypi.org/products/raspberry-pi-2-model-b/)
 * An on-board camera
     - We are using a [RaspberryPi Camera](https://www.raspberrypi.org/products/camera-module/)
