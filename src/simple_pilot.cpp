@@ -76,7 +76,7 @@ void Pilot::setServo(int index, float value) {
   // http://docs.ros.org/api/mavros/html/srv/CommandLong.html
   // CMD_DO_SET_SERVO (183): https://pixhawk.ethz.ch/mavlink/
   mavros::CommandLong srv;
-  srv.request.command = mavros::CommandLongRequest::CMD_DO_SET_SERVO;
+  srv.request.command = 183; //mavros::CommandLongRequest::CMD_DO_SET_SERVO;
   srv.request.param1 = index + 1; // servos are 1-indexed here
   srv.request.param2 = pulse_width;
   bool result = command_client.call(srv);
