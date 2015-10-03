@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <ros/ros.h>
-#include <mavros_msgs/ActuatorControl.h>
+#include <mavros/ActuatorControl.h>
 #include <geometry_msgs/Twist.h>
 
 class Pilot {
@@ -41,7 +41,7 @@ Pilot::Pilot() {
   ROS_INFO_STREAM("param pub_rate: " << pub_rate);
 
   // connects subs and pubs
-  actuator_pub = nh.advertise<mavros_msgs::ActuatorControl>("actuator_control", 1);
+  actuator_pub = nh.advertise<mavros::ActuatorControl>("actuator_control", 1);
   cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
 
   // setup
@@ -87,7 +87,7 @@ void Pilot::velCallback(const geometry_msgs::Twist::ConstPtr& update) {
 
 void Pilot::sendThrusterMessage() {
   // init message
-  mavros_msgs::ActuatorControl actuator_msg;
+  mavros::ActuatorControl actuator_msg;
   actuator_msg.header.stamp = ros::Time::now();
   actuator_msg.header.frame_id = "base_link";
   actuator_msg.group_mix = 0;

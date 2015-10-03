@@ -8,7 +8,6 @@
 #include <vector>
 #include <ros/ros.h>
 #include <mavros_msgs/CommandLong.h>
-#include <mavros_msgs/CommandCode.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
