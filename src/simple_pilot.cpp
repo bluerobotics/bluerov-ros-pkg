@@ -7,7 +7,8 @@
 
 #include <vector>
 #include <ros/ros.h>
-#include <mavros/CommandLong.h>
+#include <mavros_msgs/CommandLong.h>
+#include <mavros_msgs/CommandCode.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
@@ -43,7 +44,7 @@ Pilot::Pilot() {
   server.setCallback(f);
 
   // connects subs and pubs
-  command_client = nh.serviceClient<mavros::CommandLong>("/mavros/cmd/command");
+  command_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
   cmd_vel_sub = nh.subscribe<geometry_msgs::Twist>("cmd_vel", 1, &Pilot::velCallback, this);
   hazard_enable_sub = nh.subscribe<std_msgs::Bool>("hazard_enable", 1, &Pilot::hazardCallback, this);
 
@@ -75,8 +76,8 @@ void Pilot::setServo(int index, float value) {
   // send mavros command message
   // http://docs.ros.org/api/mavros/html/srv/CommandLong.html
   // CMD_DO_SET_SERVO (183): https://pixhawk.ethz.ch/mavlink/
-  mavros::CommandLong srv;
-  srv.request.command = mavros::CommandLongRequest::CMD_DO_SET_SERVO;
+  mavros_msgs::CommandLong srv;
+  srv.request.command = mavros_msgs::CommandCode::CMD_DO_SET_SERVO;
   srv.request.param1 = index + 1; // servos are 1-indexed here
   srv.request.param2 = pulse_width;
   bool result = command_client.call(srv);
