@@ -51,11 +51,11 @@ NavioController::NavioController()
   p_interface 	= new NavioInterface();
   _cmdVelSub 	= _nodeHandle.subscribe<geometry_msgs::Twist>( "cmd_vel", 1, &NavioController::VelCallback, this );
 
-  _imuPub 	= _nodeHandle.publish<sensor_msgs::Imu>( "imu_raw", 1 );
-  _gpsPub 	= _nodeHandle.publish<sensor_msgs::NavSatFix>( "gps_status", 1 );
+  _imuPub 	= _nodeHandle.advertise<sensor_msgs::Imu>( "imu_raw", 1 );
+  _gpsPub 	= _nodeHandle.advertise<sensor_msgs::NavSatFix>( "gps_status", 1 );
 
   //_adcPub	= _nodeHandle.publish<sensor_ma -- create new message for adc --
-  _ahrsPub	= _nodehandle.publish<sensor_msgs::Imu>( "imu_fused", 1 );
+  _ahrsPub	= _nodeHandle.advertise<sensor_msgs::Imu>( "imu_fused", 1 );
 
   //_baroPub	= _nodeHandle.publish< -- create new message for barometer --
 

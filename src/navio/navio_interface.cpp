@@ -14,6 +14,8 @@
 #include "../../thirdparty/navio/MS5611.h"
 #include "../../thirdparty/navio/ADS1115.h"
 
+#define ARRAY_SIZE(array) (sizeof(array)/sizeof(array[0]))
+
 enum EServoChannels
 {
     //Output 1 on the Navio is PCA9685 channel 3, and so forth
@@ -47,7 +49,7 @@ class NavioInterface
     void SendPWM( int channelNumIn, double pwmValIn );
 
     std::vector<float> GetIMU();
-    std::vector<float> GetGPS()
+    std::vector<double> GetGPS();
 
     std::vector<float> GetBaro();
     std::vector<float> GetAHRS();
@@ -62,9 +64,9 @@ class NavioInterface
     MS5611				_baro;
 
     ADS1115				_adc;
-    uint16_t				_muxes[];
+    uint16_t				_muxes[4];
 
-    float 				_results;
+    float 				_results[];
     static const uint8_t		_outputEnablePin;
 
     Navio::Pin				_pin;
@@ -72,10 +74,16 @@ class NavioInterface
     // Methods
 };
 
-NavioInterface::NavioInterface() : _outputEnablePin( Navio::RPI_GPIO_27 ), _pin( _outputEnablePin )
+// Init class constants
+const uint8_t NavioInterface::_outputEnablePin = RPI_GPIO_27;
+
+NavioInterface::NavioInterface() : _pin( _outputEnablePin )
 {
-  _muxes = { ADS1115_MUX_P0_NG, ADS1115_MUX_P1_NG, ADS1115_MUX_P2_NG, ADS1115_MUX_P3_NG );
-  _results[ ARRAY_SIZE( muxes ) ] = { 0.0f };
+  auto init = std::initializer_list<uint16_t>({ADS1115_MUX_P0_NG, ADS1115_MUX_P1_NG, ADS1115_MUX_P2_NG, ADS1115_MUX_P3_NG });
+  std::copy( init.begin(), init.end(), _muxes );
+
+//  _muxes = { ADS1115_MUX_P0_NG, ADS1115_MUX_P1_NG, ADS1115_MUX_P2_NG, ADS1115_MUX_P3_NG };
+  _results[ ARRAY_SIZE( _muxes ) ] = { 0.0f };
 }
 
 NavioInterface::~NavioInterface()
@@ -102,7 +110,7 @@ int NavioInterface::Initialize()
 
     // ADC
     _adc.setMode( ADS1115_MODE_SINGLESHOT );
-    _adc.setRate( ADS1115_RATE_60 );
+    _adc.setRate( ADS1115_RATE_860 );
 
   }else
   {
@@ -130,7 +138,7 @@ std::vector<float> NavioInterface::GetIMU()
   imuData.clear();
   imuData.empty();
 
-  _imu_getMotion9( &ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz );
+  _imu.getMotion9( &ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz );
 
   imuData.push_back( ax );
   imuData.push_back( ay );
@@ -153,7 +161,7 @@ std::vector<double> NavioInterface::GetGPS()
   gpsData.clear();
   gpsData.empty();
 
-  if( _gps.decodeSingleMessage( Ublix::NAV_POSLLH, gpsData ) == 1 )
+  if( _gps.decodeSingleMessage( Ublox::NAV_POSLLH, gpsData ) == 1 )
   {
     // iTow
     gpsData[0] /= 1000; 
@@ -193,6 +201,7 @@ std::vector<double> NavioInterface::GetGPS()
         break;
       default:
         // current state unknown
+        break;
      }
   }else
   {
@@ -223,7 +232,7 @@ std::vector<float> NavioInterface::GetBaro()
   return baroData;
 }
 
-std::vector<float> NavinInterface::GetAHRS()
+std::vector<float> NavioInterface::GetAHRS()
 {
   static std::vector<float> ahrsData( 0 );
   ahrsData.clear();
@@ -238,18 +247,19 @@ std::vector<float> NavioInterface::GetADC()
   adcData.clear();
 
   float conversion;
-
-  for( size_t i = 0; i < ARRAY_SIZE( muxes ); ++i )
+  /* -- this doesn't make sense -- research
+  for( int i = 0; i < ARRAY_SIZE( _muxes ); ++i )
   {
-    _adc.setMultiplexer( muxes[i] );
+    _adc.setMultiplexer( _muxes[i] );
 
     conversion = _adc.getMilliVolts();
     _results[i] = conversion;
 
-    for( size_t j = 0; j < ARRAY_SIZE( muxes ); ++j )
+    for( int j = 0; j < ARRAY_SIZE( _muxes ); ++j )
     {
-      adcData.push_back( ( results[j] / 1000 );
+      adcData.push_back( ( _results[j] / 1000 );
     }
   }
+  */
   return adcData;
 }

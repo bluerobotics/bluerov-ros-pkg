@@ -56,7 +56,11 @@ add_executable(teleop_xbox src/teleop_xbox.cpp)
 target_link_libraries(teleop_xbox ${catkin_LIBRARIES})
 add_dependencies(teleop_xbox ${catkin_EXPORTED_TARGETS})
 
-add_executable(navio_controller src/navio_controller.cpp)
-add_library(navio navio/PCA9685.cpp navio/gpio.cpp navio/I2Cdev.cpp )
+add_executable(navio_controller src/navio/navio_controller.cpp)
+add_library(navio thirdparty/navio/PCA9685.cpp 
+                  thirdparty/navio/gpio.cpp thirdparty/navio/I2Cdev.cpp
+                  thirdparty/navio/ADS1115.cpp thirdparty/navio/MB85RC04.cpp 
+                  thirdparty/navio/MPU9250.cpp thirdparty/navio/MS5611.cpp
+                  thirdparty/navio/Ublox.cpp )
 target_link_libraries(navio_controller navio ${catkin_LIBRARIES})
 add_dependencies(navio_controller ${catkin_EXPORTED_TARGETS})
