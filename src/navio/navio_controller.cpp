@@ -1,0 +1,113 @@
+/*
+ * File: bluerov/src/navio_controller.cpp
+ * Author: J. Neilan <jimbolysses@gmail.com>
+ * Date: October 2015
+ * Description: Sends thruster commands in microseconds to the Navio+ RPi
+ *	sheild via the Navio+ API.
+ */
+
+#include <ros/ros.h>
+#include <ros/console.h>
+#include <geometry_msgs/Twist.h>
+#include <sensor_msgs/Joy.h>
+#include <std_msgs/Bool.h>
+#include "navio_interface.cpp"
+
+class NavioController
+{
+ public:
+    NavioController();
+    virtual ~NavioController();
+
+    // Attributes
+    NavioInterface 			*p_interface;
+
+    // Methods
+    void Spin();
+    void InitNavioInterface();
+
+ private:
+    // Attributes
+    ros::NodeHandle 			_nodeHandle;
+    ros::Subscriber			_cmdVelSub;
+
+    // Methods
+    void VelCallback( const geometry_msgs::Twist::ConstPtr &cmdVel );
+    void SetServo( int index, float value );
+};
+
+NavioController::NavioController()
+{
+  p_interface = new NavioInterface();
+  _cmdVelSub = _nodeHandle.subscribe<geometry_msgs::Twist>( "cmd_vel", 1, &NavioController::VelCallback, this );
+}
+
+NavioController::~NavioController()
+{
+ // delete( &p_interface );
+}
+
+void NavioController::InitNavioInterface()
+{
+  p_interface->Initialize();
+  p_interface->SetFrequency( 50 );//testing at 50 Hz
+}
+
+void NavioController::Spin()
+{
+  ros::Rate loopRate( 1000 );
+  
+  while( ros::ok() )
+  {
+    ros::spinOnce();
+    loopRate.sleep();
+  }
+}
+
+void NavioController::SetServo( int index, float value )
+{
+  int step = 3; // output 1 on navio, servo1 is channel 3, etc...
+
+  // thruster values should be between 1100 and 1900 microseconds (us)
+  // values less than 1500 us are backwards; values more than are forwards
+  int pulseWidth = (value + 1) * 400 + 1100;
+
+  p_interface->SendPWM( index + step, pulseWidth );
+}
+
+void NavioController::VelCallback (const geometry_msgs::Twist::ConstPtr &cmdVelIn )
+{
+  // Get velocity commands
+  float roll     = cmdVelIn->angular.x;
+  float pitch    = cmdVelIn->angular.y;
+
+  float yaw      = cmdVelIn->angular.z;
+  float forward  = cmdVelIn->linear.x;
+
+  float strafe   = cmdVelIn->linear.y;
+  float vertical = cmdVelIn->linear.z;
+
+  // Build thruster commands (expected to be between -1 and 1)
+  float thruster[5];
+
+  thruster[0] = forward;
+
+  //ROS_INFO( "%f", thruster[0] );
+
+  for( size_t i = 0; i < 1; ++i )
+  {
+    SetServo( i, thruster[i] );
+  }
+}
+
+int main( int argc, char **argv )
+{
+  ros::init( argc, argv, "navio_controller" );
+
+  ROS_INFO( "Navio+ Controller Online" );
+
+  NavioController controller;
+  controller.Spin();
+
+  return 0;
+}

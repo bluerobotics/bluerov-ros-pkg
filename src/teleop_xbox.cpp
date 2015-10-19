@@ -127,6 +127,9 @@ double TeleopXbox::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int i
 
 int main(int argc, char** argv) {
   ros::init(argc, argv, "teleop_xbox");
+
+  ROS_INFO( "Teleop_Xbox Online" );
+
   TeleopXbox teleop_xbox;
   teleop_xbox.spin();
   return 0;
