@@ -44,7 +44,7 @@ class NavioInterface
     // Methods
     int Initialize();
     void SetFrequency( int freqIn );
-    void SendPWM( int channelNumIn, double servoValIn );
+    void SendPWM( int channelNumIn, double pwmValIn );
 
     std::vector<float> GetIMU();
     std::vector<float> GetGPS()
@@ -117,9 +117,9 @@ void NavioInterface::SetFrequency( int freqIn )
   _pwm.setFrequency( freqIn );
 }
 
-void NavioInterface::SendPWM( int channelNumIn, double servoValIn )
+void NavioInterface::SendPWM( int channelNumIn, double pwmValIn )
 {
-  _pwm.setPWMmS( channelNumIn, servoValIn );
+  _pwm.setPWMmS( channelNumIn, pwmValIn );
 }
 
 std::vector<float> NavioInterface::GetIMU()
@@ -151,7 +151,53 @@ std::vector<double> NavioInterface::GetGPS()
 {
   static std::vector<double> gpsData( 0 );
   gpsData.clear();
+  gpsData.empty();
 
+  if( _gps.decodeSingleMessage( Ublix::NAV_POSLLH, gpsData ) == 1 )
+  {
+    // iTow
+    gpsData[0] /= 1000; 
+    // Longitude
+    gpsData[1] /= 10000000;
+    // Latitude
+    gpsData[2] /= 10000000;
+    // Altitude
+    gpsData[3] /= 1000;
+  }else
+  {
+    ROS_INFO( "GPS Data NOT Captured" );
+  }
+
+  if( _gps.decodeSingleMessage( Ublox::NAV_STATUS, gpsData ) == 1 )
+  {
+    // GPS fix
+    switch( (int)gpsData[0] )
+    {
+      case 0x00:
+        // no fix
+        break;
+      case 0x01:
+        // dead reckoning only
+        break;
+      case 0x02:
+        // 2D fix
+        break;
+      case 0x03:
+        // 3D fix
+        break;
+      case 0x04:
+        // GPS + dead reckoning combined
+        break;
+      case 0x05:
+        // Time only fix
+        break;
+      default:
+        // current state unknown
+     }
+  }else
+  {
+    ROS_INFO( "Status Message NOT Captured" );
+  }
   return gpsData;
 }
 
