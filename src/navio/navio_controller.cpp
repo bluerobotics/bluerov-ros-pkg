@@ -10,6 +10,8 @@
 #include <ros/console.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
+#include <sensor_msgs/Imu.h>
+#include <sensor_msgs/NavSatFix.h>
 #include <std_msgs/Bool.h>
 #include "navio_interface.cpp"
 
@@ -31,6 +33,14 @@ class NavioController
     ros::NodeHandle 			_nodeHandle;
     ros::Subscriber			_cmdVelSub;
 
+    ros::Publisher			_imuPub;
+    ros::Publisher			_gpsPub;
+
+    ros::Publisher			_adcPub;
+    ros::Publisher			_ahrsPub;
+
+    ros::Publisher			_baroPub;
+
     // Methods
     void VelCallback( const geometry_msgs::Twist::ConstPtr &cmdVel );
     void SetServo( int index, float value );
@@ -38,25 +48,35 @@ class NavioController
 
 NavioController::NavioController()
 {
-  p_interface = new NavioInterface();
-  _cmdVelSub = _nodeHandle.subscribe<geometry_msgs::Twist>( "cmd_vel", 1, &NavioController::VelCallback, this );
+  p_interface 	= new NavioInterface();
+  _cmdVelSub 	= _nodeHandle.subscribe<geometry_msgs::Twist>( "cmd_vel", 1, &NavioController::VelCallback, this );
+
+  _imuPub 	= _nodeHandle.publish<sensor_msgs::Imu>( "imu_raw", 1 );
+  _gpsPub 	= _nodeHandle.publish<sensor_msgs::NavSatFix>( "gps_status", 1 );
+
+  //_adcPub	= _nodeHandle.publish<sensor_ma -- create new message for adc --
+  _ahrsPub	= _nodehandle.publish<sensor_msgs::Imu>( "imu_fused", 1 );
+
+  //_baroPub	= _nodeHandle.publish< -- create new message for barometer --
+
 }
 
 NavioController::~NavioController()
 {
- // delete( &p_interface );
+
 }
 
 void NavioController::InitNavioInterface()
 {
   p_interface->Initialize();
-  p_interface->SetFrequency( 50 );//testing at 50 Hz
+  // 50Hz
+  p_interface->SetFrequency( 50 );
 }
 
 void NavioController::Spin()
 {
   ros::Rate loopRate( 1000 );
-  
+
   while( ros::ok() )
   {
     ros::spinOnce();
@@ -89,6 +109,8 @@ void NavioController::VelCallback (const geometry_msgs::Twist::ConstPtr &cmdVelI
 
   // Build thruster commands (expected to be between -1 and 1)
   float thruster[5];
+
+  // TODO - work out logic for 4 vectored and 1 vert thruster arrangement --
 
   thruster[0] = forward;
 
