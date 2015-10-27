@@ -222,7 +222,7 @@ sudo apt-get update
 sudo apt-get install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six -y
 sudo pip install rosdep rosinstall_generator wstool rosinstall
 
-sudo apt-get install ros-indigo-image-common ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-extras ros-indigo-joy -y
+sudo apt-get install ros-indigo-image-common ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy -y
 ```
 
 First establish a catkin workspace if you haven't already:
