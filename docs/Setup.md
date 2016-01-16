@@ -200,11 +200,11 @@ BlueROV compatible vehicles use a mavlink compatible device as the interface to 
 We have a slight modification to the stock APMrover code for use with an APM 2.6. Please upload the following code to the APM.
 
 ```bash
-git clone -b br-ros-rov https://github.com/bluerobotics/ardupilot.git
-cd ardupilot/APMrover2
+git clone -b br-ros-rov https://github.com/bluerobotics/ardupilot-bluerov-apm.git
+cd ardupilot-bluerov-apm/APMrover2/
 make configure
-# gedit ../config.mk&
-# sudo apt-get install gawk
+# update arduino location and change serial port:
+# vim ../config.mk
 make
 make upload
 ```

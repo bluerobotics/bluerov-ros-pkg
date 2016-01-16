@@ -2,10 +2,11 @@
 
 This project uses [semantic versioning](http://semver.org/).
 
-## v0.4.0 - 2015/10/01
+## v0.4.0 - 2016/01/16
 
-* Fixed `CMD_DO_SET_SERVO` is not a member compile error
-* Added documentation for pre-made SD card image
+* Last planned release for APM support
+* Fixed `CMD_DO_SET_SERVO` is not a member compile error to due to unexpected update from dependency packages
+* Updated URL for the APM software
 
 ## v0.3.0 - 2015/06/23
 
