@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<launch>
+	<!-- rosrun camera_calibration cameracalibrator.py --size 8x6 --square 0.025 --approximate=0.3 left:=/stereo/left/image_raw right:=/stereo/right/image_raw left_camera:=/stereo/left right_camera:=/stereo/right -->
+	
+  <!-- start the left camera -->
+  <node respawn="true" pkg="usb_cam" type="usb_cam_node" name="left" ns="stereo">
+    <param name="video_device" value="/dev/video0" type="string"/>
+    <param name="camera_frame_id" value="left" type="string"/>
+    <param name="camera_name" value="left" type="string"/>
+    <param name="width" value="1280" type="int"/>
+    <param name="height" value="720" type="int"/>
+    <param name="framerate" value="25" type="int"/>
+  </node>
+
+  <!-- start the right camera -->
+  <node respawn="true" pkg="usb_cam" type="usb_cam_node" name="right" ns="stereo">
+    <param name="video_device" value="/dev/video1" type="string"/>
+    <param name="camera_frame_id" value="right" type="string"/>
+    <param name="camera_name" value="right" type="string"/>
+    <param name="width" value="1280" type="int"/>
+    <param name="height" value="720" type="int"/>
+    <param name="framerate" value="25" type="int"/>
+  </node>
+
+  <!-- start the stereo image processor -->
+  <node respawn="true" pkg="stereo_image_proc" type="stereo_image_proc" name="stereo_image_proc" ns="stereo">
+    <param name="approximate_sync" value="true" type="bool"/>
+  </node>
+</launch>
