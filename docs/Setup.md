@@ -4,7 +4,7 @@ This setup guide will help you get the workstation and ROV computers up and runn
 
 ## Workstation Preparation
 
-ROS is a powerful framework, but only once it has been installed... We highly recommend sticking with Ubuntu for your workstation computer as this is the only officially supported operating system. As of this writing, we are using Ubuntu 14.04 and ROS 8 (Indigo Igloo.)
+ROS is a powerful framework, but only once it has been installed... We highly recommend sticking with Ubuntu for your workstation computer as this is the only officially supported operating system. As of this writing, we are using Ubuntu 14.04 and ROS 8 (jade Igloo.)
 
 If you intend to run any of the 3D ROS applications (rviz, gazebo), you should either install Ubuntu directly onto the computer (not as a VM) or make sure that your computer has a discrete graphics card if you plan on running Ubuntu through a virtual machine. You've been warned!
 
@@ -12,29 +12,29 @@ ProTip: If you are new to ROS, check out the [ROS Cheat sheet](http://www.clearp
 
 ### Workstation ROS Installation - Direct
 
-Installing ROS directly onto an Ubuntu machine is the best way to develop with ROS. You will experience the fewest hiccups and you should be able to find plenty of support since this is the most common install method for ROS. Please view the [official ROS installation instructions](http://wiki.ros.org/indigo/Installation/Ubuntu) for the most up-to-date instructions. Those instructions basically boil down to this:
+Installing ROS directly onto an Ubuntu machine is the best way to develop with ROS. You will experience the fewest hiccups and you should be able to find plenty of support since this is the most common install method for ROS. Please view the [official ROS installation instructions](http://wiki.ros.org/jade/Installation/Ubuntu) for the most up-to-date instructions. Those instructions basically boil down to this:
 
 ```bash
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 
 sudo apt-get update
-sudo apt-get install ros-indigo-desktop
+sudo apt-get install ros-jade-desktop
 
 sudo rosdep init
 rosdep update
 
-echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/jade/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
 ### Workstation ROS Installation - Virtual Machine
 
-For first time ROS users, one option is the Ubuntu 14.04 virtual machine images with ROS Indigo Igloo preinstalled by Nootrix. This option is a good choice if Ubuntu isn't your primary operating system.
+For first time ROS users, one option is the Ubuntu 14.04 virtual machine images with ROS jade Igloo preinstalled by Nootrix. This option is a good choice if Ubuntu isn't your primary operating system.
 
 Choose the 64-bit version if your machine has the resources to support it, otherwise use the 32-bit version. To install using this method, please do the following:
 
-1. visit the [Nootrix blog post](http://nootrix.com/2014/09/ros-indigo-virtual-machine/) on the subject
+1. visit the [Nootrix blog post](http://nootrix.com/2014/09/ros-jade-virtual-machine/) on the subject
 1. download and install [VirtualBox](https://www.virtualbox.org/) and the VirtualBox Extension Pack for your host machine
 1. download one of the ROS [virtual machine images from Nootrix](http://nootrix.com/downloads/#RosVM)
 1. open VirtualBox, choose File > Import Appliance and then select the virtual machine image that you downloaded
@@ -50,16 +50,16 @@ An image containing a working version of Ubuntu and the BlueROV software is avai
 ```bash
 # get the image
 cd ~/Downloads
-wget http://SOME_HOST/2015-10-01-bluerov-ros-indigo-0.4.0.zip
+wget http://SOME_HOST/2015-10-01-bluerov-ros-jade-0.4.0.zip
 sudo apt-get install unzip
-unzip 2015-10-01-bluerov-ros-indigo-0.4.0.zip
+unzip 2015-10-01-bluerov-ros-jade-0.4.0.zip
 
 # prepare the install destination
 df -h # determine the file path of the SD card, /dev/sdb in this case
 eject /dev/sdb
 
 # install the image
-sudo bmaptool copy --bmap ~/Downloads/2015-10-01-bluerov-ros-indigo-0.4.0.bmap ~/Downloads/2015-10-01-bluerov-ros-indigo-0.4.0.img /dev/sdb
+sudo bmaptool copy --bmap ~/Downloads/2015-10-01-bluerov-ros-jade-0.4.0.bmap ~/Downloads/2015-10-01-bluerov-ros-jade-0.4.0.img /dev/sdb
 ```
 
 One the image is installed, you can install the card into the ROV, power it up, and immediately begin communicating the the ROV using the Ethernet tether. See the "Network Configuration for Tether" section for instructions on how to configure your workstation computer for the tether connection. You can also configure your ROV for above-surface Wifi communication per the Wifi network setup section below.
@@ -184,12 +184,12 @@ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main
 wget https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -O - | sudo apt-key add -
 
 sudo apt-get update
-sudo apt-get install ros-indigo-ros-base -y
+sudo apt-get install ros-jade-ros-base -y
 
 sudo rosdep init
 rosdep update
 
-echo "source /opt/ros/indigo/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/jade/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -222,7 +222,7 @@ sudo apt-get update
 sudo apt-get install python-setuptools python-pip python-yaml python-argparse python-distribute python-docutils python-dateutil python-setuptools python-six -y
 sudo pip install rosdep rosinstall_generator wstool rosinstall
 
-sudo apt-get install ros-indigo-image-common ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy -y
+sudo apt-get install ros-jade-image-common ros-jade-image-transport-plugins ros-jade-mavros ros-jade-mavros-msgs ros-jade-mavros-extras ros-jade-joy -y
 ```
 
 First establish a catkin workspace if you haven't already:
@@ -269,7 +269,9 @@ Next, set up udev rules to make devices easier to find:
 
 ```bash
 sudo cp ~/catkin_ws/src/bluerov/extra/99-bluerov.rules /etc/udev/rules.d/
-sudo udevadm trigger # to immediately reload the rules without restarting
+
+# to immediately reload the rules without restarting
+sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
 ```
 
 Check out [this syntax guide](http://www.reactivated.net/writing_udev_rules.html#syntax) for creating new udev rules.
