@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-
-<launch>
-  <node respawn="true" pkg="bluerov" type="simple_pilot" name="simple_pilot" output="screen"></node>
-</launch>

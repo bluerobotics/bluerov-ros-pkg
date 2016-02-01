@@ -8,4 +8,7 @@
     <param name="framerate" value="30" type="int"/>
     <param name="quality" value="80" type="int"/>
   </node>
+
+  <!-- trigger the camera -->
+  <node pkg="rosservice" type="rosservice" name="raspicam_start" args="call --wait /camera/start_capture"/>
 </launch>

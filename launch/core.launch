@@ -14,9 +14,12 @@
   <!-- start mavlink -->
   <include file="$(find bluerov)/launch/apm.launch" />
 
-  <!-- start pilot -->
-  <!-- <include file="$(find bluerov)/launch/simple_pilot.launch" /> -->
+  <!-- start imu odometry -->
+  <!-- <include file="$(find bluerov)/launch/imu_odom.launch" /> -->
 
-  <!-- start camera -->
+  <!-- start raspi camera -->
   <include file="$(find bluerov)/launch/camera.launch" />
+
+  <!-- start voxel camera -->
+  <!-- <include file="$(find voxel)/launch/voxel.launch" /> -->
 </launch>
