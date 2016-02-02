@@ -199,3 +199,34 @@ https://github.com/clearpathrobotics/robot_upstart
 ![BlueROV Schematic](BlueROV%20Schematic.jpg)
 
 Note: The xml version of embedded diagrams can be modified with [https://www.draw.io/](https://www.draw.io/).
+
+
+future apps:
+
+* teleop_joy
+* 2d_buoy_finder
+* 3d_buoy_finder
+* buoy_ekf
+* target_follower
+
+output for bouy_finders:
+
+# 2d_buoy_finder, 3d_buoy_finder
+
+Uses a monocular camera and stereo camera respectively to identify buoys. The output is an array of buoys with the following attributes:
+
+* pose
+* color (in HSV)
+* volume (in m^3)
+
+# buoy_ekf
+
+Identifies previously found buoys by their position, color, and volume. Publishes a transform to each found buoy. Propagates the position of the buoys by assuming that they have zero velocity even if they are no longer found by the finder apps.
+
+The following parameters should be set for this node:
+
+* buoys_topic
+* search_volume_dev
+* search_color_h_dev
+* search_color_s_dev
+* search_color_v_dev

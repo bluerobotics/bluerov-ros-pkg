@@ -18,7 +18,7 @@
   <!-- <include file="$(find bluerov)/launch/imu_odom.launch" /> -->
 
   <!-- start raspi camera -->
-  <include file="$(find bluerov)/launch/camera.launch" />
+  <include file="$(find bluerov)/launch/raspi_camera.launch" />
 
   <!-- start voxel camera -->
   <!-- <include file="$(find voxel)/launch/voxel.launch" /> -->

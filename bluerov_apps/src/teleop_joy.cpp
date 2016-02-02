@@ -5,16 +5,18 @@
  * Description: Manual remote control of ROVs like the bluerov_apps.
  */
 
+#include <vector>
 #include <math.h>
 #include <ros/ros.h>
 #include <ros/console.h>
-#include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Joy.h>
-#include <std_msgs/Bool.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov_apps/teleop_joyConfig.h>
-#include <mavros_msgs/CommandLong.h>
-#include <mavros_msgs/CommandCode.h>
+#include <mavros_msgs/CommandBool.h>
+
+// #include <geometry_msgs/Twist.h>
+// #include <mavros_msgs/CommandLong.h>
+// #include <mavros_msgs/CommandCode.h>
 
 class TeleopJoy {
   public:
@@ -22,6 +24,8 @@ class TeleopJoy {
     void spin();
 
   private:
+    // functions
+    bool risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index);
     void setArming(bool armed);
     // void setMode(bool armed);
     // void triggerTakeoff();
@@ -30,16 +34,21 @@ class TeleopJoy {
     void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
     // double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
 
+    // node handle
     ros::NodeHandle nh;
-    // ros::Publisher cmd_vel_pub;
-    // ros::Publisher hazard_enable_pub;
-    ros::Subscriber joy_sub;
 
+    // dynamic reconfigure
     dynamic_reconfigure::Server<bluerov_apps::teleop_joyConfig> server;
     bluerov_apps::teleop_joyConfig config;
 
-    bool initLT;
-    bool initRT;
+    // pubs and subs
+    // ros::Publisher cmd_vel_pub;
+    // ros::Publisher hazard_enable_pub;
+    ros::Subscriber joy_sub;
+    ros::ServiceClient arm_client;
+
+    // state
+    std::vector<int> previous_buttons;
 };
 
 TeleopJoy::TeleopJoy() {
@@ -52,10 +61,11 @@ TeleopJoy::TeleopJoy() {
   // cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   // hazard_enable_pub = nh.advertise<std_msgs::Bool>("hazard_enable", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
+  arm_client = nh.serviceClient<mavros_msgs::CommandBool>("/mavros/cmd/arming");
 
   // set initial values
-  initLT = false;
-  initRT = false;
+  // initLT = false;
+  // initRT = false;
 }
 
 void TeleopJoy::spin() {
@@ -75,24 +85,27 @@ void TeleopJoy::configCallback(bluerov_apps::teleop_joyConfig &update, uint32_t 
   config = update;
 }
 
-void TeleopJoy::setArming(bool enable)
-{
-  // generate request
-  // mecanumbot::RobotHazardsEnable srv;
-  // srv.request.enable = enable;
+bool TeleopJoy::risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index) {
+  return (joy->buttons[index] == 1 && previous_buttons[index] == 0);
+}
 
-  // // send request
-  // if(hazards_cli.call(srv)) {
-  //   if(enable) {
-  //     ROS_INFO("Hazards enabled");
-  //   }
-  //   else {
-  //     ROS_INFO("Hazards disabled");
-  //   }
-  // }
-  // else {
-  //   ROS_ERROR("Failed to update hazards");
-  // }
+void TeleopJoy::setArming(bool arm) {
+  // generate request
+  mavros_msgs::CommandBool srv;
+  srv.request.value = arm;
+
+  // send request
+  if(arm_client.call(srv)) {
+    if(arm) {
+      ROS_INFO("Armed");
+    }
+    else {
+      ROS_INFO("Disarmed");
+    }
+  }
+  else {
+    ROS_ERROR("Failed to update arming");
+  }
 }
 
 void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
@@ -105,6 +118,21 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   // msg.angular.y = config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo);
   // msg.angular.z = config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
   // cmd_vel_pub.publish(msg);
+
+  // init previous_buttons
+  if(previous_buttons.size() != joy->buttons.size()) {
+    previous_buttons = std::vector<int>(joy->buttons);
+  }
+
+  // arm
+  if(risingEdge(joy, config.arm_button)) {
+    setArming(true);
+  }
+
+  // disarm
+  if(risingEdge(joy, config.disarm_button)) {
+    setArming(false);
+  }
 
   // // send hazards enable message
   // if(joy->buttons[config.disable_button] > 0) {
@@ -120,7 +148,8 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   //   // ROS_INFO("Hazards enabled.");
   // }
 
-  // remember buttons for the future
+  // remember current button states for future comparison
+  previous_buttons = std::vector<int>(joy->buttons);
 }
 
 int main(int argc, char** argv) {
