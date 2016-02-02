@@ -1,6 +1,6 @@
 # bluerov-ros-pkg
 
-A ROS package for the BlueROV and BlueROV compatible vehicles.
+A ROS package for the [BlueROV](https://www.bluerobotics.com/store/rov/bluerov-r1/) and BlueROV compatible vehicles.
 
 ## Documentation
 

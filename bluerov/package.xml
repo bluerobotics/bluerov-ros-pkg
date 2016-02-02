@@ -1,33 +1,25 @@
 <?xml version="1.0"?>
 <package>
   <name>bluerov</name>
-  <version>0.3.0</version>
-  <description>Robotic underwater vehicle propelled by the BlueRobotics thrusters.</description>
+  <version>0.4.0</version>
+  <description>Core launch files for the BlueROV.</description>
 
   <maintainer email="josh@javconcepts.com">Josh Villbrandt</maintainer>
   <license>GPLv3</license>
-  <url type="website">https://github.com/bluerobotics/BlueROV</url>
-  <author email="josh@javconcepts.com">Josh Villbrandt</author>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <build_depend>geometry_msgs</build_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tf</build_depend>
-  <build_depend>joy</build_depend>
   <build_depend>mavros</build_depend>
-  <build_depend>message_generation</build_depend>
 
   <run_depend>geometry_msgs</run_depend>
   <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>tf</run_depend>
-  <run_depend>joy</run_depend>
   <run_depend>mavros</run_depend>
-  <run_depend>message_runtime</run_depend>
 </package>
