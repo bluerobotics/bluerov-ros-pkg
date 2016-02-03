@@ -13,6 +13,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <bluerov_apps/teleop_joyConfig.h>
 #include <mavros_msgs/CommandBool.h>
+#include <mavros_msgs/CommandLong.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/OverrideRCIn.h>
 
@@ -43,7 +44,7 @@ class TeleopJoy {
     // pubs and subs
     ros::Subscriber joy_sub;
     ros::Publisher rc_override_pub;
-    ros::ServiceClient arm_client;
+    ros::ServiceClient cmd_client;
     ros::ServiceClient mode_client;
 
     // state
@@ -61,7 +62,7 @@ TeleopJoy::TeleopJoy() {
   // connects subs and pubs
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
   rc_override_pub = nh.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override", 1);
-  arm_client = nh.serviceClient<mavros_msgs::CommandBool>("/mavros/cmd/arming");
+  cmd_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
   mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 
   // initialize trigger axis helpers
@@ -91,13 +92,18 @@ bool TeleopJoy::risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index) {
 }
 
 void TeleopJoy::setArming(bool arm) {
+  // Arm/disarm method following:
+  // https://github.com/mavlink/qgroundcontrol/issues/590
+  // https://pixhawk.ethz.ch/mavlink/#MAV_CMD_COMPONENT_ARM_DISARM
+
   // generate request
-  mavros_msgs::CommandBool srv;
-  srv.request.value = arm;
+  mavros_msgs::CommandLong srv;
+  srv.request.command = 400; // MAV_CMD_COMPONENT_ARM_DISARM
+  srv.request.param1 = (arm ? 1 : 0);
+  srv.request.param2 = 21196; // force disarm (see GCS_Mavlink.cpp)
 
   // send request
-  arm_client.call(srv);
-  if(srv.response.success) {
+  if(cmd_client.call(srv)) {
     ROS_INFO(arm ? "Armed" : "Disarmed");
   }
   else {
@@ -179,7 +185,7 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   msg.channels[0] = mapToPpm(config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo)); // pitch    (wy)
   msg.channels[3] = mapToPpm(config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo)); // yaw      (wz)
 
-  msg.channels[4] = 1000; // mode: 1000 for stabilize, 2000 for alt_hode
+  msg.channels[4] = 1000; // mode: 1000 for stabilize, 2000 for alt_hold
   msg.channels[7] = 1500; // camera tilt
 
   rc_override_pub.publish(msg);
@@ -196,6 +202,7 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 
   // disarm
   if(risingEdge(joy, config.disarm_button)) {
+    // setMode(mavros_msgs::SetModeRequest::MAV_MODE_STABILIZE_DISARMED);
     setArming(false);
   }
 

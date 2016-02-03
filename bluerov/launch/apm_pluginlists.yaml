@@ -6,6 +6,7 @@ plugin_blacklist:
 - global_position
 - safety_area
 - setpoint_attitude
+- sys_time
 # extras
 - image_pub
 - 'mocap_*'
