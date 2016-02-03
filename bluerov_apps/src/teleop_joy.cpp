@@ -13,10 +13,8 @@
 #include <dynamic_reconfigure/server.h>
 #include <bluerov_apps/teleop_joyConfig.h>
 #include <mavros_msgs/CommandBool.h>
-
-// #include <geometry_msgs/Twist.h>
-// #include <mavros_msgs/CommandLong.h>
-// #include <mavros_msgs/CommandCode.h>
+#include <mavros_msgs/SetMode.h>
+#include <mavros_msgs/OverrideRCIn.h>
 
 class TeleopJoy {
   public:
@@ -27,12 +25,13 @@ class TeleopJoy {
     // functions
     bool risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index);
     void setArming(bool armed);
-    // void setMode(bool armed);
+    void setMode(uint8_t mode);
     // void triggerTakeoff();
     // void triggerLanding();
+    double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
+    uint16_t mapToPpm(double in);
     void configCallback(bluerov_apps::teleop_joyConfig &update, uint32_t level);
     void joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
-    // double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
 
     // node handle
     ros::NodeHandle nh;
@@ -42,12 +41,14 @@ class TeleopJoy {
     bluerov_apps::teleop_joyConfig config;
 
     // pubs and subs
-    // ros::Publisher cmd_vel_pub;
-    // ros::Publisher hazard_enable_pub;
     ros::Subscriber joy_sub;
+    ros::Publisher rc_override_pub;
     ros::ServiceClient arm_client;
+    ros::ServiceClient mode_client;
 
     // state
+    bool initLT;
+    bool initRT;
     std::vector<int> previous_buttons;
 };
 
@@ -58,14 +59,14 @@ TeleopJoy::TeleopJoy() {
   server.setCallback(f);
 
   // connects subs and pubs
-  // cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-  // hazard_enable_pub = nh.advertise<std_msgs::Bool>("hazard_enable", 1);
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
+  rc_override_pub = nh.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override", 1);
   arm_client = nh.serviceClient<mavros_msgs::CommandBool>("/mavros/cmd/arming");
+  mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 
-  // set initial values
-  // initLT = false;
-  // initRT = false;
+  // initialize trigger axis helpers
+  initLT = false;
+  initRT = false;
 }
 
 void TeleopJoy::spin() {
@@ -95,29 +96,93 @@ void TeleopJoy::setArming(bool arm) {
   srv.request.value = arm;
 
   // send request
-  if(arm_client.call(srv)) {
-    if(arm) {
-      ROS_INFO("Armed");
-    }
-    else {
-      ROS_INFO("Disarmed");
-    }
+  arm_client.call(srv);
+  if(srv.response.success) {
+    ROS_INFO(arm ? "Armed" : "Disarmed");
   }
   else {
     ROS_ERROR("Failed to update arming");
   }
 }
 
+void TeleopJoy::setMode(uint8_t mode) {
+  // generate request
+  mavros_msgs::SetMode srv;
+  srv.request.base_mode = 0;
+  srv.request.custom_mode = "althold";
+
+  // send request
+  mode_client.call(srv);
+  if(srv.response.success) {
+    ROS_INFO("Mode set to %d", mode);
+  }
+  else {
+    ROS_ERROR("Failed to update mode");
+  }
+}
+
+uint16_t TeleopJoy::mapToPpm(double in) {
+  // in should be -1 to 1
+  // out should be 1000 to 2000 (microseconds)
+
+  uint16_t out = 1000 + (in + 1.0) * 500;
+
+  if(out > 2000) {
+    return 2000;
+  }
+  else if(out < 1000) {
+    return 1000;
+  }
+  else {
+    return out;
+  }
+}
+
+double TeleopJoy::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo) {
+  // return 0 if axis index is invalid
+  if(index < 0 || index>= joy->axes.size()) {
+    return 0.0;
+  }
+
+  // grab axis value
+  double value;
+  if(index == 6) {
+    // the joystick driver initializes all values to 0.0, however, the triggers
+    // physically spring back to 1.0 - let's account for this here
+    double lt = joy->axes[2];
+    double rt = joy->axes[5];
+    if(lt < -0.01 || lt > 0.01) initLT = true;
+    else if(!initLT) lt = 1.0;
+    if(rt < -0.01 || rt > 0.01) initRT = true;
+    else if(!initRT) rt = 1.0;
+
+    // this is the trigger pair pseudo axis (LT-RT; pressing RT results in a positive number)
+    value = (lt - rt) / 2.0;
+  }
+  else {
+    value = joy->axes[index];
+  }
+
+  // apply exponential scaling
+  return expo * pow(value, 5) + (1.0 - expo) * value;
+}
+
 void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
-  // // send cmd_vel message
-  // geometry_msgs::Twist msg;
-  // msg.linear.x =  config.x_scaling  * computeAxisValue(joy, config.x_axis,  config.expo);
-  // msg.linear.y =  config.y_scaling  * computeAxisValue(joy, config.y_axis,  config.expo);
-  // msg.linear.z =  config.z_scaling  * computeAxisValue(joy, config.z_axis,  config.expo);
-  // msg.angular.x = config.wx_scaling * computeAxisValue(joy, config.wx_axis, config.expo);
-  // msg.angular.y = config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo);
-  // msg.angular.z = config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo);
-  // cmd_vel_pub.publish(msg);
+  // send rc override message
+  mavros_msgs::OverrideRCIn msg;
+
+  msg.channels[5] = mapToPpm(config.x_scaling  * computeAxisValue(joy, config.x_axis,  config.expo)); // forward  (x)
+  msg.channels[6] = mapToPpm(config.y_scaling  * computeAxisValue(joy, config.y_axis,  config.expo)); // strafe   (y)
+  msg.channels[2] = mapToPpm(config.z_scaling  * computeAxisValue(joy, config.z_axis,  config.expo)); // throttle (z)
+
+  msg.channels[1] = mapToPpm(config.wx_scaling * computeAxisValue(joy, config.wx_axis, config.expo)); // roll     (wx)
+  msg.channels[0] = mapToPpm(config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo)); // pitch    (wy)
+  msg.channels[3] = mapToPpm(config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo)); // yaw      (wz)
+
+  msg.channels[4] = 1000; // mode: 1000 for stabilize, 2000 for alt_hode
+  msg.channels[7] = 1500; // camera tilt
+
+  rc_override_pub.publish(msg);
 
   // init previous_buttons
   if(previous_buttons.size() != joy->buttons.size()) {
@@ -134,19 +199,16 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
     setArming(false);
   }
 
-  // // send hazards enable message
-  // if(joy->buttons[config.disable_button] > 0) {
-  //   std_msgs::Bool hmsg;
-  //   hmsg.data = false;
-  //   hazard_enable_pub.publish(hmsg);
-  //   // ROS_INFO("Hazards disabled.");
+  // takeoff
+
+  // land
+
+  // stabilize
+  // if(risingEdge(joy, config.stabilize_button)) {
+  //   setMode(mavros_msgs::SetModeRequest::MAV_MODE_MANUAL_ARMED);
   // }
-  // else if(joy->buttons[config.enable_button] > 0) {
-  //   std_msgs::Bool hmsg;
-  //   hmsg.data = true;
-  //   hazard_enable_pub.publish(hmsg);
-  //   // ROS_INFO("Hazards enabled.");
-  // }
+
+  // alt_hold
 
   // remember current button states for future comparison
   previous_buttons = std::vector<int>(joy->buttons);

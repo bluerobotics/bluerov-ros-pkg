@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- start the joystick driver -->
+  <node respawn="true" pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="dev" value="/dev/input/js0" type="string"/>
+    <remap from="joy" to="joy_f310" />
+  </node>
+
+  <!-- remap from f310 mappings to xbox mappings -->
+  <!-- http://wiki.ros.org/joystick_remapper/Tutorials/UsingJoystickRemapper -->
+  <node pkg="joystick_remapper" type="joystick_remapper.py" name="remapper" >
+    <remap from="joy_source" to="joy_f310" />
+    <remap from="joy_dest" to="joy" />
+    <param name="button_mapping" type="string" value="8 11 12 9 15" />
+    <param name="axis_mapping" type="string" value="=" /> <!-- No changes -->
+  </node>
+
+  <!-- start the teleop app -->
+  <node pkg="bluerov_apps" type="teleop_joy" name="teleop_joy" output="screen"></node>
+</launch>

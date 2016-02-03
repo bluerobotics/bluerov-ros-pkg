@@ -258,8 +258,7 @@ catkin_make
 On the ROV / RaspberryPi only, you'll also want to install and build the `raspicam_node`:
 
 ```bash
-cd ~/catkin_ws/src/
-git clone https://github.com/fpasteau/raspicam_node
+git clone https://github.com/fpasteau/raspicam_node ~/catkin_ws/src/raspicam
 
 cd ~/catkin_ws/
 catkin_make

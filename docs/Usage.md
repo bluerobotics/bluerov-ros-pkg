@@ -209,23 +209,42 @@ future apps:
 * buoy_ekf
 * target_follower
 
-output for bouy_finders:
-
-# 2d_buoy_finder, 3d_buoy_finder
-
-Uses a monocular camera and stereo camera respectively to identify buoys. The output is an array of buoys with the following attributes:
+# BUOY message type:
 
 * pose
 * color (in HSV)
-* volume (in m^3)
+
+# 2d_buoy_finder
+
+Uses blob segmentation and color uniformity to identify buoys from a monocular camera.
+
+Parameters:
+
+* buoys_topic_out
+* radius
+* _some factor for cicularity_
+* color_dev
+
+# 3d_buoy_finder
+
+Uses RANSAC with a spherical model to identify buoys from a stereo camera.
+
+Parameters:
+
+* buoys_topic_out
+* radius_min
+* radius_max
+
+http://www.pointclouds.org/documentation/tutorials/random_sample_consensus.php
+http://docs.pointclouds.org/1.7.0/sac__model__sphere_8h_source.html
 
 # buoy_ekf
 
-Identifies previously found buoys by their position, color, and volume. Publishes a transform to each found buoy. Propagates the position of the buoys by assuming that they have zero velocity even if they are no longer found by the finder apps.
+Identifies previously found buoys by their position and color. Publishes a transform to each found buoy. Propagates the position of the buoys by assuming that they have zero velocity even if they are no longer found by the finder apps.
 
-The following parameters should be set for this node:
+Parameters:
 
-* buoys_topic
+* buoys_topic_in
 * search_volume_dev
 * search_color_h_dev
 * search_color_s_dev
