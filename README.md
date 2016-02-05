@@ -22,8 +22,8 @@ sudo apt-get install ros-jade-image-common ros-jade-image-transport-plugins ros-
 # clone
 mkdir ~/repos
 git clone https://github.com/bluerobotics/bluerov-ros-pkg.git ~/repos/bluerov-ros-pkg
-ln -s ~/repos/bluerov-ros-pkg/bluerov ~/catkin_ws/bluerov
-ln -s ~/repos/bluerov-ros-pkg/bluerov_apps ~/catkin_ws/bluerov_apps
+ln -s ~/repos/bluerov-ros-pkg/bluerov ~/catkin_ws/src/bluerov
+ln -s ~/repos/bluerov-ros-pkg/bluerov_apps ~/catkin_ws/src/bluerov_apps
 
 # udev rules
 sudo cp ~/catkin_ws/src/bluerov/debian/99-bluerov.rules /etc/udev/rules.d/
