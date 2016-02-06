@@ -20,6 +20,6 @@
   <!-- start raspi camera -->
   <include file="$(find bluerov)/launch/raspi_camera.launch" />
 
-  <!-- start voxel camera -->
-  <!-- <include file="$(find voxel)/launch/voxel.launch" /> -->
+  <!-- start stereo camera -->
+  <include file="$(find elp_stereo_camera)/launch/elp_stereo_camera.launch" />
 </launch>
