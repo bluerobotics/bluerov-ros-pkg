@@ -3,7 +3,8 @@
 <launch>
   <arg name="fcu_url" default="/dev/pixhawk:115200"/>
   <arg name="gcs_url" default=""/>
-  <arg name="system_id" default="252"/>
+  <arg name="system_id" default="255"/>
+  <arg name="component_id" default="240"/>
   <arg name="tgt_system" default="1"/>
   <arg name="tgt_component" default="1"/>
   <arg name="pluginlists_yaml" value="$(find bluerov)/launch/apm_pluginlists.yaml"/>
@@ -14,6 +15,7 @@
     <param name="fcu_url" value="$(arg fcu_url)"/>
     <param name="gcs_url" value="$(arg gcs_url)"/>
     <param name="system_id" value="$(arg system_id)"/>
+    <param name="component_id" value="$(arg component_id)"/>
     <param name="target_system_id" value="$(arg tgt_system)"/>
     <param name="target_component_id" value="$(arg tgt_component)"/>
 
