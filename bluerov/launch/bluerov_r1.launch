@@ -4,22 +4,17 @@
   <!-- roscore automatically started by roslaunch -->
 
   <!-- start publishing transforms -->
-  <!-- <param name="robot_description" textfile="$(find bluerov)/extra/bluerov.urdf" />
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
-  <arg name="model" />
-  <arg name="gui" default="False" />
-  <param name="use_gui" value="$(arg gui)" />
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" /> -->
+  <!-- <include file="$(find bluerov)/launch/description.launch" /> -->
 
   <!-- start mavlink -->
   <include file="$(find bluerov)/launch/apm.launch" />
 
   <!-- start imu odometry -->
-  <!-- <include file="$(find bluerov)/launch/imu_odom.launch" /> -->
+  <include file="$(find bluerov)/launch/imu_odom.launch" />
 
   <!-- start raspi camera -->
   <include file="$(find bluerov)/launch/raspi_camera.launch" />
 
   <!-- start stereo camera -->
-  <include file="$(find elp_stereo_camera)/launch/elp_stereo_camera.launch" />
+  <!-- <include file="$(find elp_stereo_camera)/launch/elp_stereo_camera.launch" /> -->
 </launch>
