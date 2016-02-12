@@ -18,3 +18,7 @@ catkin_package(
 
 ## Specify additional locations of header files
 include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(ekf_filter_init src/ekf_filter_init.cpp)
+add_dependencies(ekf_filter_init ${catkin_EXPORTED_TARGETS})
+target_link_libraries(ekf_filter_init ${catkin_LIBRARIES})
