@@ -12,10 +12,9 @@
 #include <sensor_msgs/Joy.h>
 #include <dynamic_reconfigure/server.h>
 #include <bluerov_apps/teleop_joyConfig.h>
-#include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/CommandLong.h>
-#include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/OverrideRCIn.h>
+// #include <mavros_msgs/SetMode.h>
 
 class TeleopJoy {
   public:
@@ -26,7 +25,7 @@ class TeleopJoy {
     // functions
     bool risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index);
     void setArming(bool armed);
-    void setMode(uint8_t mode);
+    // void setMode(uint8_t mode);
     // void triggerTakeoff();
     // void triggerLanding();
     double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
@@ -48,6 +47,10 @@ class TeleopJoy {
     ros::ServiceClient mode_client;
 
     // state
+    enum Modes {STABILIZE=1000, ALT_HOLD=2000}; // ppm in uS; from ArduSub/radio.cpp
+    uint16_t mode;
+    enum Tilt {STEP=50, MIN=1000, MAX=2000}; // ppm in uS
+    uint16_t camera_tilt;
     bool initLT;
     bool initRT;
     std::vector<int> previous_buttons;
@@ -65,7 +68,9 @@ TeleopJoy::TeleopJoy() {
   cmd_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
   mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 
-  // initialize trigger axis helpers
+  // initialize state variables
+  mode = Modes::STABILIZE;
+  camera_tilt = 1500;
   initLT = false;
   initRT = false;
 }
@@ -111,21 +116,21 @@ void TeleopJoy::setArming(bool arm) {
   }
 }
 
-void TeleopJoy::setMode(uint8_t mode) {
-  // generate request
-  mavros_msgs::SetMode srv;
-  srv.request.base_mode = 0;
-  srv.request.custom_mode = "althold";
+// void TeleopJoy::setMode(uint8_t mode) {
+//   // generate request
+//   mavros_msgs::SetMode srv;
+//   srv.request.base_mode = 0;
+//   srv.request.custom_mode = "althold";
 
-  // send request
-  mode_client.call(srv);
-  if(srv.response.success) {
-    ROS_INFO("Mode set to %d", mode);
-  }
-  else {
-    ROS_ERROR("Failed to update mode");
-  }
-}
+//   // send request
+//   mode_client.call(srv);
+//   if(srv.response.success) {
+//     ROS_INFO("Mode set to %d", mode);
+//   }
+//   else {
+//     ROS_ERROR("Failed to update mode");
+//   }
+// }
 
 uint16_t TeleopJoy::mapToPpm(double in) {
   // in should be -1 to 1
@@ -174,6 +179,52 @@ double TeleopJoy::computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int in
 }
 
 void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
+  // init previous_buttons
+  if(previous_buttons.size() != joy->buttons.size()) {
+    previous_buttons = std::vector<int>(joy->buttons);
+  }
+
+  // arm, disarm
+  if(risingEdge(joy, config.disarm_button)) {
+    setArming(false);
+  }
+  else if(risingEdge(joy, config.arm_button)) {
+    setArming(true);
+  }
+
+  // mode switching
+  if(risingEdge(joy, config.stabilize_button)) {
+    mode = Modes::STABILIZE;
+  }
+  else if(risingEdge(joy, config.alt_hold_button)) {
+    mode = Modes::ALT_HOLD;
+  }
+
+  // takeoff and land
+  if(risingEdge(joy, config.land_button)) {
+    // triggerLanding();
+  }
+  else if(risingEdge(joy, config.takeoff_button)) {
+    // triggerTakeoff();
+  }
+
+  // change camera_tilt
+  if(risingEdge(joy, config.cam_tilt_up)) {
+    camera_tilt = camera_tilt + Tilt::STEP;
+    if(camera_tilt > Tilt::MAX) {
+      camera_tilt = Tilt::MAX;
+    }
+  }
+  else if(risingEdge(joy, config.cam_tilt_down)) {
+    camera_tilt = camera_tilt - Tilt::STEP;
+    if(camera_tilt < Tilt::MIN) {
+      camera_tilt = Tilt::MIN;
+    }
+  }
+
+  // remember current button states for future comparison
+  previous_buttons = std::vector<int>(joy->buttons);
+
   // send rc override message
   mavros_msgs::OverrideRCIn msg;
 
@@ -185,40 +236,10 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   msg.channels[0] = mapToPpm(config.wy_scaling * computeAxisValue(joy, config.wy_axis, config.expo)); // pitch    (wy)
   msg.channels[3] = mapToPpm(config.wz_scaling * computeAxisValue(joy, config.wz_axis, config.expo)); // yaw      (wz)
 
-  msg.channels[4] = 1000; // mode: 1000 for stabilize, 2000 for alt_hold
-  msg.channels[7] = 1500; // camera tilt
+  msg.channels[4] = mode; // mode
+  msg.channels[7] = camera_tilt; // camera tilt
 
   rc_override_pub.publish(msg);
-
-  // init previous_buttons
-  if(previous_buttons.size() != joy->buttons.size()) {
-    previous_buttons = std::vector<int>(joy->buttons);
-  }
-
-  // arm
-  if(risingEdge(joy, config.arm_button)) {
-    setArming(true);
-  }
-
-  // disarm
-  if(risingEdge(joy, config.disarm_button)) {
-    // setMode(mavros_msgs::SetModeRequest::MAV_MODE_STABILIZE_DISARMED);
-    setArming(false);
-  }
-
-  // takeoff
-
-  // land
-
-  // stabilize
-  // if(risingEdge(joy, config.stabilize_button)) {
-  //   setMode(mavros_msgs::SetModeRequest::MAV_MODE_MANUAL_ARMED);
-  // }
-
-  // alt_hold
-
-  // remember current button states for future comparison
-  previous_buttons = std::vector<int>(joy->buttons);
 }
 
 int main(int argc, char** argv) {
