@@ -29,5 +29,3 @@
     <param name="encoding" value="$(arg encoding)"/>
   </node> -->
 </launch>
-
-
