@@ -14,7 +14,6 @@
 #include <bluerov_apps/teleop_joyConfig.h>
 #include <mavros_msgs/CommandLong.h>
 #include <mavros_msgs/OverrideRCIn.h>
-// #include <mavros_msgs/SetMode.h>
 
 class TeleopJoy {
   public:
@@ -26,8 +25,7 @@ class TeleopJoy {
     bool risingEdge(const sensor_msgs::Joy::ConstPtr& joy, int index);
     void setArming(bool armed);
     // void setMode(uint8_t mode);
-    // void triggerTakeoff();
-    // void triggerLanding();
+    void cmdTakeoffLand(bool takeoff);
     double computeAxisValue(const sensor_msgs::Joy::ConstPtr& joy, int index, double expo);
     uint16_t mapToPpm(double in);
     void configCallback(bluerov_apps::teleop_joyConfig &update, uint32_t level);
@@ -44,12 +42,15 @@ class TeleopJoy {
     ros::Subscriber joy_sub;
     ros::Publisher rc_override_pub;
     ros::ServiceClient cmd_client;
-    // ros::ServiceClient mode_client;
+
+    // constants
+    enum {COMPONENT_ARM_DISARM=400}; // https://pixhawk.ethz.ch/mavlink/
+    enum {NAV_LAND_LOCAL=23, NAV_TAKEOFF_LOCAL=24}; // https://pixhawk.ethz.ch/mavlink/
+    enum {MODE_STABILIZE=1000, MODE_ALT_HOLD=2000}; // ppm in uS; from ArduSub/radio.cpp
+    enum {PPS_MIN=1000, PPS_MAX=2000}; // uS
 
     // state
-    enum {MODE_STABILIZE=1000, MODE_ALT_HOLD=2000}; // ppm in uS; from ArduSub/radio.cpp
     uint16_t mode;
-    enum {TILT_STEP=50, TILT_MIN=1000, TILT_MAX=2000}; // ppm in uS
     uint16_t camera_tilt;
     bool initLT;
     bool initRT;
@@ -66,7 +67,6 @@ TeleopJoy::TeleopJoy() {
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
   rc_override_pub = nh.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override", 1);
   cmd_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
-  // mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 
   // initialize state variables
   mode = MODE_STABILIZE;
@@ -103,7 +103,7 @@ void TeleopJoy::setArming(bool arm) {
 
   // generate request
   mavros_msgs::CommandLong srv;
-  srv.request.command = 400; // MAV_CMD_COMPONENT_ARM_DISARM
+  srv.request.command = COMPONENT_ARM_DISARM;
   srv.request.param1 = (arm ? 1 : 0);
   srv.request.param2 = 21196; // force disarm (see GCS_Mavlink.cpp)
 
@@ -116,21 +116,28 @@ void TeleopJoy::setArming(bool arm) {
   }
 }
 
-// void TeleopJoy::setMode(uint8_t mode) {
-//   // generate request
-//   mavros_msgs::SetMode srv;
-//   srv.request.base_mode = 0;
-//   srv.request.custom_mode = "althold";
+void TeleopJoy::cmdTakeoffLand(bool takeoff) {
+  // https://pixhawk.ethz.ch/mavlink/#MAV_CMD_NAV_LAND_LOCAL
 
-//   // send request
-//   mode_client.call(srv);
-//   if(srv.response.success) {
-//     ROS_INFO("Mode set to %d", mode);
-//   }
-//   else {
-//     ROS_ERROR("Failed to update mode");
-//   }
-// }
+  // generate request
+  mavros_msgs::CommandLong srv;
+  srv.request.command = (takeoff ? NAV_TAKEOFF_LOCAL : NAV_LAND_LOCAL);
+  srv.request.param1 = 0;
+  srv.request.param2 = 0;
+  srv.request.param3 = config.scend_rate;
+  srv.request.param4 = 0;
+  srv.request.param5 = 0;
+  srv.request.param6 = 0;
+  srv.request.param7 = (takeoff ? config.takeoff_depth : 0);
+
+  // send request
+  if(cmd_client.call(srv)) {
+    ROS_INFO(takeoff ? "Taking off" : "Landing");
+  }
+  else {
+    ROS_ERROR("Failed to request takeoff/land");
+  }
+}
 
 uint16_t TeleopJoy::mapToPpm(double in) {
   // in should be -1 to 1
@@ -202,23 +209,23 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 
   // takeoff and land
   if(risingEdge(joy, config.land_button)) {
-    // triggerLanding();
+    cmdTakeoffLand(false);
   }
   else if(risingEdge(joy, config.takeoff_button)) {
-    // triggerTakeoff();
+    cmdTakeoffLand(true);
   }
 
   // change camera_tilt
   if(risingEdge(joy, config.cam_tilt_up)) {
-    camera_tilt = camera_tilt + TILT_STEP;
-    if(camera_tilt > TILT_MAX) {
-      camera_tilt = TILT_MAX;
+    camera_tilt = camera_tilt + config.cam_tilt_step;
+    if(camera_tilt > PPS_MAX) {
+      camera_tilt = PPS_MAX;
     }
   }
   else if(risingEdge(joy, config.cam_tilt_down)) {
-    camera_tilt = camera_tilt - TILT_STEP;
-    if(camera_tilt < TILT_MIN) {
-      camera_tilt = TILT_MIN;
+    camera_tilt = camera_tilt - config.cam_tilt_step;
+    if(camera_tilt < PPS_MIN) {
+      camera_tilt = PPS_MIN;
     }
   }
 
