@@ -7,5 +7,5 @@
   </node>
 
   <!-- start the teleop app -->
-  <node pkg="bluerov_apps" type="teleop_joy" name="teleop_joy" output="screen"></node>
+  <node pkg="bluerov_apps" type="teleop_joy" name="teleop_joy" output="screen" required="true"></node>
 </launch>

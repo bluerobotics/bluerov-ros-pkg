@@ -63,6 +63,10 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(bluerov_apps ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+add_executable(joystick_remapper src/joystick_remapper.cpp)
+add_dependencies(joystick_remapper ${catkin_EXPORTED_TARGETS})
+target_link_libraries(joystick_remapper ${catkin_LIBRARIES})
+
 add_executable(teleop_joy src/teleop_joy.cpp)
 add_dependencies(teleop_joy ${catkin_EXPORTED_TARGETS} bluerov_apps_gencfg)
 target_link_libraries(teleop_joy ${catkin_LIBRARIES})
