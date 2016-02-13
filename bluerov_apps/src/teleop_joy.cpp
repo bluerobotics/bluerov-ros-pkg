@@ -44,12 +44,12 @@ class TeleopJoy {
     ros::Subscriber joy_sub;
     ros::Publisher rc_override_pub;
     ros::ServiceClient cmd_client;
-    ros::ServiceClient mode_client;
+    // ros::ServiceClient mode_client;
 
     // state
-    enum Modes {STABILIZE=1000, ALT_HOLD=2000}; // ppm in uS; from ArduSub/radio.cpp
+    enum {MODE_STABILIZE=1000, MODE_ALT_HOLD=2000}; // ppm in uS; from ArduSub/radio.cpp
     uint16_t mode;
-    enum Tilt {STEP=50, MIN=1000, MAX=2000}; // ppm in uS
+    enum {TILT_STEP=50, TILT_MIN=1000, TILT_MAX=2000}; // ppm in uS
     uint16_t camera_tilt;
     bool initLT;
     bool initRT;
@@ -66,10 +66,10 @@ TeleopJoy::TeleopJoy() {
   joy_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &TeleopJoy::joyCallback, this);
   rc_override_pub = nh.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override", 1);
   cmd_client = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
-  mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
+  // mode_client = nh.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 
   // initialize state variables
-  mode = Modes::STABILIZE;
+  mode = MODE_STABILIZE;
   camera_tilt = 1500;
   initLT = false;
   initRT = false;
@@ -194,10 +194,10 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 
   // mode switching
   if(risingEdge(joy, config.stabilize_button)) {
-    mode = Modes::STABILIZE;
+    mode = MODE_STABILIZE;
   }
   else if(risingEdge(joy, config.alt_hold_button)) {
-    mode = Modes::ALT_HOLD;
+    mode = MODE_ALT_HOLD;
   }
 
   // takeoff and land
@@ -210,15 +210,15 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 
   // change camera_tilt
   if(risingEdge(joy, config.cam_tilt_up)) {
-    camera_tilt = camera_tilt + Tilt::STEP;
-    if(camera_tilt > Tilt::MAX) {
-      camera_tilt = Tilt::MAX;
+    camera_tilt = camera_tilt + TILT_STEP;
+    if(camera_tilt > TILT_MAX) {
+      camera_tilt = TILT_MAX;
     }
   }
   else if(risingEdge(joy, config.cam_tilt_down)) {
-    camera_tilt = camera_tilt - Tilt::STEP;
-    if(camera_tilt < Tilt::MIN) {
-      camera_tilt = Tilt::MIN;
+    camera_tilt = camera_tilt - TILT_STEP;
+    if(camera_tilt < TILT_MIN) {
+      camera_tilt = TILT_MIN;
     }
   }
 
