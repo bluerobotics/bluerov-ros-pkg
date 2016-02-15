@@ -216,7 +216,10 @@ void TeleopJoy::joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   }
 
   // change camera_tilt
-  if(risingEdge(joy, config.cam_tilt_up)) {
+  if(risingEdge(joy, config.cam_tilt_reset)) {
+    camera_tilt = 1500;
+  }
+  else if(risingEdge(joy, config.cam_tilt_up)) {
     camera_tilt = camera_tilt + config.cam_tilt_step;
     if(camera_tilt > PPS_MAX) {
       camera_tilt = PPS_MAX;
