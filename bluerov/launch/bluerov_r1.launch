@@ -9,9 +9,9 @@
   <!-- start mavlink -->
   <include file="$(find bluerov)/launch/apm.launch" />
 
+  <!-- start imu odometry -->
+  <include file="$(find bluerov)/launch/imu_odom.launch" />
+
   <!-- start raspi camera -->
   <include file="$(find bluerov)/launch/raspi_camera.launch" />
-
-  <!-- start stereo camera -->
-  <!-- <include file="$(find elp_stereo_camera)/launch/elp_stereo_camera.launch" /> -->
 </launch>
