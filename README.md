@@ -1,11 +1,12 @@
 # bluerov-ros-pkg
 
-A set of ROS package for the [BlueROV](https://www.bluerobotics.com/store/rov/bluerov-r1/) and BlueROV compatible vehicles.
+A set of ROS package for the [BlueROV](https://www.bluerobotics.com/product-category/rov/) and BlueROV compatible vehicles.
 
 ## Documentation
 
 The primary documentation for the packages contained in the repository is stored on the ROS wiki. Specifically, check out the following pages:
 
+* http://wiki.ros.org/Robots/BlueROV
 * http://wiki.ros.org/bluerov
 * http://wiki.ros.org/bluerov_apps
 
@@ -68,7 +69,7 @@ Be sure to follow the code quality guidelines below. This project currently lack
 * Make sure your commit messages are in the [proper format](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
   * Messages should be in the imperative: "Fix thing" instead of "Fixed thing" or "Fixes thing")
   * Commits should usually reference an open ticket: "Fix thing (#123)"
-* Make sure your code conforms to Python ([flake8](http://flake8.readthedocs.org/en/latest/)) code standards and adheres to the established style within the project.
+* Make sure your code conforms to the ([ROS C++ Style Guide](http://wiki.ros.org/CppStyleGuide)) and adheres to the established style within the project.
 * Make sure you have added the necessary tests for your changes.
 * Run all the tests to assure nothing else was accidentally broken.
 
@@ -81,38 +82,4 @@ Be sure to follow the code quality guidelines below. This project currently lack
 
 ## Change History
 
-This project uses [semantic versioning](http://semver.org/).
-
-### v0.5.0 - TBD
-
-* Renamed `teleop_xbox` to `teleop_joy` and refactored it for the Pixhawk+APM stack instead of the APM+old APM stack
-* Organized content into two packages
-* Moved documentation to ROS wiki
-* Added udev rules for the xbox controller and f310 controller
-
-### v0.4.0 - 2016/01/16
-
-* Last planned release for APM support
-* Fixed `CMD_DO_SET_SERVO` is not a member compile error to due to unexpected update from dependency packages
-* Updated URL for the APM software
-
-### v0.3.0 - 2015/06/23
-
-* Updated document ahead of public announcement
-
-### v0.2.0 - 2015/06/15
-
-* Added dynamic reconfigure to `simple_pilot` node to control biases
-* Added `buoyancy_control` offset in `simple_pilot` node to account positive or negative buoyancy.
-* Removed mavros arming command from `teleop_xbox` node since APMrover wasn't listening to it anyway
-* Added hazard enable/disable behavior between `teleop_xbox` and `simple_pilot` nodes
-
-### v0.1.0 - 2015/05/03
-
-* Migrated `teleop_xbox` node from [mecanumbot-ros-pkg](https://github.com/joshvillbrandt/mecanumbot-ros-pkg)
-* Added dynamic reconfigure to `teleop_xbox`
-* Added `simple_pilot` node which sends thruster commands over MAVLink
-* Added ROS installation documentation for the ROV computer and the workstation computer
-* Added documentation
-* Added launch files
-* Added RQT configuration file
+This project uses [semantic versioning](http://semver.org/). See [CHANGELOG.rst](CHANGELOG.rst) for details.
