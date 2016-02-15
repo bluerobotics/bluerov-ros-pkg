@@ -18,9 +18,9 @@ This will install both packages from source. If you have a fork of the repositor
 
 ```bash
 # choose indigo dependencies
-sudo apt-get install -y ros-indigo-image-common ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy
+sudo apt-get install -y ros-indigo-image-common ros-indigo-robot-state-publisher ros-indigo-joint-state-publisher ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy
 # or jade dependencies
-sudo apt-get install -y ros-jade-image-common ros-jade-image-transport-plugins ros-jade-mavros ros-jade-mavros-msgs ros-jade-mavros-extras ros-jade-joy
+sudo apt-get install -y ros-jade-image-common ros-jade-robot-state-publisher ros-jade-joint-state-publisher ros-jade-image-transport-plugins ros-jade-mavros ros-jade-mavros-msgs ros-jade-mavros-extras ros-jade-joy
 
 # clone
 mkdir ~/repos
