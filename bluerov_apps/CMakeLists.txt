@@ -4,11 +4,9 @@ project(bluerov_apps)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
+find_package(catkin REQUIRED COMPONENTS dynamic_reconfigure
   geometry_msgs
   nav_msgs
-  pcl_conversions
-  pcl_ros
   roscpp
   rospy
   std_msgs
