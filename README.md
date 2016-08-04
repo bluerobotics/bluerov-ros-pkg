@@ -21,9 +21,11 @@ This will install both packages from source. If you have a fork of the repositor
 sudo apt-get install -y ros-indigo-image-common ros-indigo-robot-state-publisher ros-indigo-joint-state-publisher ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy
 # or jade dependencies
 sudo apt-get install -y ros-jade-image-common ros-jade-robot-state-publisher ros-jade-joint-state-publisher ros-jade-image-transport-plugins ros-jade-mavros ros-jade-mavros-msgs ros-jade-mavros-extras ros-jade-joy
+# or kinetic dependencies
+sudo apt-get install -y ros-kinetic-image-common ros-kinetic-robot-state-publisher ros-kinetic-joint-state-publisher ros-kinetic-image-transport-plugins ros-kinetic-mavros ros-kinetic-mavros-msgs ros-kinetic-mavros-extras ros-kinetic-joy libhdf5-openmpi libhdf5-openmpi-dev
 
 # clone
-mkdir ~/repos
+mkdir -p ~/repos ~/catkin_ws/src
 git clone https://github.com/bluerobotics/bluerov-ros-pkg.git ~/repos/bluerov-ros-pkg
 ln -s ~/repos/bluerov-ros-pkg/bluerov ~/catkin_ws/src/bluerov
 ln -s ~/repos/bluerov-ros-pkg/bluerov_apps ~/catkin_ws/src/bluerov_apps
@@ -36,6 +38,12 @@ sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm
 # build
 cd ~/catkin_ws
 catkin_make
+```
+
+If you installed ros from the official repositories, note that you should first activate its environment in order for the build commands to succeed. For example, if you installed `kinetic`:
+
+```bash
+/opt/ros/kinetic/env.sh catkin_make
 ```
 
 ## Contributing
