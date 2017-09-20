@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="fcu_url" default="/dev/pixhawk:115200"/>
+  <arg name="fcu_url" default="udp://:14550@127.0.0.1:14550"/>
   <arg name="gcs_url" default=""/>
   <arg name="system_id" default="255"/>
   <arg name="component_id" default="240"/>
