@@ -13,6 +13,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+  joy
+  mavros
 )
 
 ## System dependencies are found with CMake's conventions

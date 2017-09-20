@@ -1,0 +1,5 @@
+# microsoft xbox controller
+SUBSYSTEM=="input", KERNEL=="js*", SUBSYSTEMS=="usb", DRIVERS=="xpad", ATTRS{bInterfaceProtocol}=="81", ATTRS{bInterfaceNumber}=="00", SYMLINK+="xboxcontroller"
+
+# logitech f310 controller
+SUBSYSTEM=="input", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c21d", SYMLINK+="f310controller"

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- start the joystick driver -->
+  <node respawn="true" pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="dev" value="/dev/f310controller" type="string"/>
+    <remap from="joy" to="joy_f310"/>
+  </node>
+
+  <!-- remap from f310 mappings to xbox mappings -->
+  <node pkg="bluerov_apps" type="joystick_remapper" name="joystick_remapper" output="screen" required="true">
+    <param name="user_warning" value="Make sure the Mode light is off on the F310 controller!" type="str"/>
+    <param name="joy_source" value="joy_f310" type="str"/>
+    <param name="joy_dest" value="joy" type="str"/>
+    <param name="test" value="2" type="int"/>
+  </node>
+
+  <!-- start the teleop app -->
+  <node pkg="bluerov_apps" type="teleop_joy" name="teleop_joy" output="screen" required="true"></node>
+</launch>
