@@ -6,11 +6,13 @@ A set of ROS package for the [BlueROV2](http://www.bluerobotics.com/store/rov/bl
 * Flash a PixHawk with the latest stable version of [ArduSub](https://www.ardusub.com/software/ardusub-firmware.html)
 * Flash the companion Pi with Bluerobotic's [image](https://www.ardusub.com/getting-started/installation.html#ardusub) of the pi
 * Run the script in bluerov-ros-pkg/bluerov_apps/extra/ubuntu_setup.sh on your surface machine with Ubuntu.
-* Run the following to connect to the PixHawk
+* Set the IP of the surface machine to ```192.168.2.1```
+* Connect the teather to the surface machine and power the rover
+* Run the following to connect to the PixHawk on the surface machine
 ```
 roslaunch bluerov_apps apm.launch
 ```
-* Run one of the following to control the rover with a xbox/logitech f310 controllers
+* Run one of the following to control the rover with a xbox/logitech f310 controller on the surface machine with the controller connected
 ```
 #For xbox controller
 roslaunch bluerov_apps teleop_xbox.launch
@@ -18,6 +20,8 @@ roslaunch bluerov_apps teleop_xbox.launch
 #For logitech F310 controller
 roslaunch bluerov_apps teleop_f310.launch
 ```
+* Install and run QGroundControl to edit pixhawk parameters, check arming status, monitor your vehicle, etc on your surface machine
+(QGroundControl will automatically connect to the pixhawk)
 
 The documentation that follows in this file is specifically for those interested in contributing.
 
