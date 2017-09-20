@@ -11,7 +11,5 @@
 
   <!-- start imu odometry -->
   <include file="$(find bluerov)/launch/imu_odom.launch" />
-
-  <!-- start raspi camera -->
-  <include file="$(find bluerov)/launch/raspi_camera.launch" />
+  
 </launch>
