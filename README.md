@@ -1,14 +1,23 @@
 # bluerov-ros-pkg
 
-A set of ROS package for the [BlueROV](https://www.bluerobotics.com/product-category/rov/) and BlueROV compatible vehicles.
+A set of ROS package for the [BlueROV2](http://www.bluerobotics.com/store/rov/bluerov2/) and [ArduSub](https://www.ardusub.com/) compatible vehicles.
 
-## Documentation
+## Setup
+* Flash a PixHawk with the latest stable version of [ArduSub](https://www.ardusub.com/software/ardusub-firmware.html)
+* Flash the companion Pi with Bluerobotic's [image](https://www.ardusub.com/getting-started/installation.html#ardusub) of the pi
+* Run the script in bluerov-ros-pkg/bluerov_apps/extra/ubuntu_setup.sh on your surface machine with Ubuntu.
+* Run the following to connect to the PixHawk
+```
+roslaunch bluerov_apps apm.launch
+```
+* Run one of the following to control the rover with a xbox/logitech f310 controllers
+```
+#For xbox controller
+roslaunch bluerov_apps teleop_xbox.launch
 
-The primary documentation for the packages contained in the repository is stored on the ROS wiki. Specifically, check out the following pages:
-
-* http://wiki.ros.org/Robots/BlueROV
-* http://wiki.ros.org/bluerov
-* http://wiki.ros.org/bluerov_apps
+#For logitech F310 controller
+roslaunch bluerov_apps teleop_f310.launch
+```
 
 The documentation that follows in this file is specifically for those interested in contributing.
 
@@ -17,25 +26,33 @@ The documentation that follows in this file is specifically for those interested
 This will install both packages from source. If you have a fork of the repository, use the URL for your fork instead (or add it later with `git remote`.)
 
 ```bash
-# choose indigo dependencies
-sudo apt-get install -y ros-indigo-image-common ros-indigo-robot-state-publisher ros-indigo-joint-state-publisher ros-indigo-image-transport-plugins ros-indigo-mavros ros-indigo-mavros-msgs ros-indigo-mavros-extras ros-indigo-joy
-# or jade dependencies
-sudo apt-get install -y ros-jade-image-common ros-jade-robot-state-publisher ros-jade-joint-state-publisher ros-jade-image-transport-plugins ros-jade-mavros ros-jade-mavros-msgs ros-jade-mavros-extras ros-jade-joy
+#Install ROS Kinetic
 
-# clone
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+sudo apt-get update
+sudo apt-get install -y build-essential git
+sudo apt-get install -y ros-kinetic-desktop-full ros-kinetic-mavros* ros-kinetic-joy
+
+sudo rosdep init
+rosdep update
+
+echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/
+catkin_make
+
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
 mkdir ~/repos
 git clone https://github.com/bluerobotics/bluerov-ros-pkg.git ~/repos/bluerov-ros-pkg
-ln -s ~/repos/bluerov-ros-pkg/bluerov ~/catkin_ws/src/bluerov
 ln -s ~/repos/bluerov-ros-pkg/bluerov_apps ~/catkin_ws/src/bluerov_apps
 
-# udev rules
-sudo cp ~/catkin_ws/src/bluerov/debian/99-bluerov.rules /etc/udev/rules.d/
 sudo cp ~/catkin_ws/src/bluerov_apps/debian/99-bluerov-apps.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
-
-# build
-cd ~/catkin_ws
-catkin_make
 ```
 
 ## Contributing
