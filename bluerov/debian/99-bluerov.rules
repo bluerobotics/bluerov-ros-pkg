@@ -1,8 +1,0 @@
-# permissions
-KERNEL=="ttyACM[0-9]*", NAME="tts/ACM%n", SYMLINK+="%k", GROUP="uucp", MODE="0666"
-
-# apm shortcut
-SUBSYSTEM=="tty", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0010", SYMLINK+="apm"
-
-# pixhawk shortcut
-SUBSYSTEM=="tty", ATTRS{idVendor}=="26ac", ATTRS{idProduct}=="0011", SYMLINK+="pixhawk"
