@@ -21,7 +21,7 @@ roslaunch bluerov_apps teleop_xbox.launch
 roslaunch bluerov_apps teleop_f310.launch
 ```
 * Install and run QGroundControl to edit pixhawk parameters, check arming status, monitor your vehicle, etc on your surface machine
-(QGroundControl will automatically connect to the pixhawk)
+* Disable autoconnect UDP in general settings of QGC, add 14552 to comm links and connect to it.
 
 The documentation that follows in this file is specifically for those interested in contributing.
 
