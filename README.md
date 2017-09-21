@@ -10,15 +10,11 @@ A set of ROS package for the [BlueROV2](http://www.bluerobotics.com/store/rov/bl
 * Connect the teather to the surface machine and power the rover
 * Run the following to connect to the PixHawk on the surface machine
 ```
-roslaunch bluerov_apps apm.launch
+roslaunch rover apm.launch
 ```
-* Run one of the following to control the rover with a xbox/logitech f310 controller on the surface machine with the controller connected
+* Run one of the following to control the rover with a xbox controller on the surface machine with the controller connected
 ```
-#For xbox controller
-roslaunch bluerov_apps teleop_xbox.launch
-
-#For logitech F310 controller
-roslaunch bluerov_apps teleop_f310.launch
+roslaunch rover teleop_joy.launch
 ```
 * Install and run QGroundControl to edit pixhawk parameters, check arming status, monitor your vehicle, etc on your surface machine
 * Disable autoconnect UDP in general settings of QGC, add 14552 to comm links and connect to it.
