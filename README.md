@@ -53,10 +53,7 @@ source ~/.bashrc
 
 mkdir ~/repos
 git clone https://github.com/bluerobotics/bluerov-ros-pkg.git ~/repos/bluerov-ros-pkg
-ln -s ~/repos/bluerov-ros-pkg/bluerov_apps ~/catkin_ws/src/bluerov_apps
-
-sudo cp ~/catkin_ws/src/bluerov_apps/debian/99-bluerov-apps.rules /etc/udev/rules.d/
-sudo udevadm control --reload-rules && sudo service udev restart && sudo udevadm trigger
+ln -s ~/repos/bluerov-ros-pkg/rover ~/catkin_ws/src/rover
 ```
 
 ## Contributing
