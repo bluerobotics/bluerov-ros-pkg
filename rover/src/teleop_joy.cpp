@@ -144,7 +144,7 @@ void Teleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     setMode("STABILIZE");
   
   RCmsg[5] = map(joy->axes[0]); //set lateral to left joy l/r
-  RCmsg[0] = map(joy->axes[1]); //set pitch to left joy u/d
+  RCmsg[7] = map(joy->axes[1]); //set pitch to left joy u/d
   RCmsg[2] = map(joy->axes[4]); //Throttle/Up-Down = R_UD
   RCmsg[3] = map(joy->axes[3]); //Yaw = R_LR
   RCmsg[4] = round((map(joy->axes[2]) + map(joy->axes[5]*-1))/2); //Forward = LTB,RTB
