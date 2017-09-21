@@ -52,6 +52,9 @@ Teleop::Teleop()
   RCmsg[5] = 1500;
   RCmsg[6] = 1500;
   RCmsg[7] = 1500;
+  
+  flag_lr = false;
+  flag_ud = false;
 }
 
 void Teleop::spin() {
@@ -142,9 +145,45 @@ void Teleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     
  if(joy->buttons[1]) //B
     setMode("STABILIZE");
+    
+ if(joy->buttons[2])
+ {
+    if(flag_lr == false)
+    {
+        flag_lr = true;
+        ROS_INFO("Roll");
+    }
+    else
+    {
+        flag_lr = false;
+        ROS_INFO("Lateral");
+    }
+ }
   
-  RCmsg[5] = map(joy->axes[0]); //set lateral to left joy l/r
-  RCmsg[7] = map(joy->axes[1]); //set pitch to left joy u/d
+ if(flag_lr)
+   RCmsg[1] = map(joy->axes[0]); //set roll to left joy l/r
+ else
+   RCmsg[5] = map(joy->axes[0]); //set lateral to left joy l/r
+   
+ if(joy->buttons[3])
+ {
+    if(flag_ud == false)
+    {
+        flag_ud = true;
+        ROS_INFO("Pitch");
+    }
+    else
+    {
+        flag_ud = false;
+        ROS_INFO("Camera");
+    }
+ }
+  
+ if(flag_ud)
+   RCmsg[0] = map(joy->axes[1]); //set pitch to left joy l/r
+ else
+   RCmsg[7] = map(joy->axes[1]); //set camera to left joy l/r
+   
   RCmsg[2] = map(joy->axes[4]); //Throttle/Up-Down = R_UD
   RCmsg[3] = map(joy->axes[3]); //Yaw = R_LR
   RCmsg[4] = round((map(joy->axes[2]) + map(joy->axes[5]*-1))/2); //Forward = LTB,RTB
