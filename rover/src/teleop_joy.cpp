@@ -144,16 +144,20 @@ void Teleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
  {
     if(flag_lr)
         flag_lr = false;
+        ROS_INFO("Left joy stick set to control camera");
     else
         flag_lr = true;
+        ROS_INFO("Left joy stick set to control rov pitch");
  }
  
   if(joy->buttons[3]) //Y
  {
     if(flag_ud)
         flag_ud = false;
+        ROS_INFO("Left joy stick set to control lateral");
     else
         flag_ud = true;
+        ROS_INFO("Left joy stick set to control roll");
  }
  
  if(joy->buttons[0]) //A
@@ -161,26 +165,6 @@ void Teleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     
  if(joy->buttons[1]) //B
     setMode("STABILIZE");
- 
- /*
- cout << "L_LR " << map(joy->axes[0])  
-      << "\nL_UD " << map(joy->axes[1]) 
-      << "\nR_LR " << map(joy->axes[3]) 
-      << "\nR_UD " << map(joy->axes[4])
-      << "\nLT " << map(joy->axes[2]) 
-      << "\nRT " << map(joy->axes[5])
-      << "\nA " << joy->buttons[0]
-      << "\nB " << joy->buttons[1]
-      << "\nX " << joy->buttons[2] 
-      << "\nY " << joy->buttons[3] 
-      << "\nLTB " << joy->buttons[4] 
-      << "\nRTB " << joy->buttons[5] 
-      << "\nL " << joy->buttons[6] 
-      << "\nR " << joy->buttons[7] 
-      << "\nXB " << joy->buttons[8] 
-      << "\nLJB " << joy->buttons[9] 
-      << "\nRJB " << joy->buttons[10] << endl;
-  */
   
   if(flag_ud)
   {
@@ -199,12 +183,6 @@ void Teleop::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
   RCmsg[2] = map(joy->axes[4]); //Throttle/Up-Down = R_UD
   RCmsg[3] = map(joy->axes[3]); //Yaw = R_LR
   RCmsg[4] = round((map(joy->axes[2]) + map(joy->axes[5]*-1))/2); //Forward = LTB,RTB
-  
-  for(int i=0; i<8; i++)
-  {
-    cout << RCmsg[i] << endl;
-  }
-  cout << endl;
 }
 
 
