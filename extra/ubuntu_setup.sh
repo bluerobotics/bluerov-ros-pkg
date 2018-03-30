@@ -20,6 +20,7 @@ echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
 #Download repo
-mkdir ~/repos
-git clone https://github.com/kdkalvik/bluerov-ros-pkg.git ~/repos/bluerov-ros-pkg
-ln -s ~/repos/bluerov-ros-pkg/rover ~/catkin_ws/src/rover
+cd catkin_ws/src
+git clone https://github.com/kdkalvik/bluerov-ros-pkg.git
+cd ..
+catkin_make

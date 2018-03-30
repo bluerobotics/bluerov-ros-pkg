@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- start the joystick driver -->
+  <node respawn="true" pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="dev" value="/dev/input/by-id/usb-Microsoft_Controller_7EED809A1A57-joystick" type="string"/>
+  </node>
+
+  <!-- start the teleop app -->
+  <node pkg="bluerov-ros-pkg" type="teleop_joy" name="teleop_joy" output="screen" required="true"></node>
+</launch>
