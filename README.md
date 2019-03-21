@@ -2,6 +2,8 @@
 
 A set of ROS package for the [BlueROV](https://www.bluerobotics.com/product-category/rov/) and BlueROV compatible vehicles.
 
+> This repository is currently RETIRED, UNSUPPORTED, and UNMAINTAINED.
+
 ## Documentation
 
 The primary documentation for the packages contained in the repository is stored on the ROS wiki. Specifically, check out the following pages:
